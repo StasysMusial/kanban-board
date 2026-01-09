@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	lip "github.com/charmbracelet/lipgloss"
 	tea "github.com/charmbracelet/bubbletea"
 )

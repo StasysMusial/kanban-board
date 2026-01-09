@@ -18,19 +18,24 @@ func main() {
 }
 
 type model struct {
-	list List
+	lists []List
 }
 
 func initialModel() tea.Model {
-	var content []string = []string{}
-	for i := range 64 {
-		content = append(
-			content,
-			fmt.Sprintf("test line %s", strconv.Itoa(i)),
-		)
+	lists := []List{}
+	for j := range 3 {
+		var content []string = []string{}
+		for i := range 64 {
+			content = append(
+				content,
+				fmt.Sprintf("test line %s", strconv.Itoa(i)),
+			)
+		}
+		list := NewList(30, 10, content)
+		lists = append(lists, list)
 	}
 	return model{
-		list: NewList(30, 10, content),
+		lists: lists,
 	}
 }
 
@@ -49,7 +54,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	m.list, cmd = m.list.Update(msg)
+	for _, list := range m.lists {
+		list, cmd = list.Update(msg)
+	}
 
 	return m, cmd
 }
