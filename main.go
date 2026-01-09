@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
+	lip "github.com/charmbracelet/lipgloss"
 )
 
 func main() {
@@ -18,12 +19,14 @@ func main() {
 }
 
 type model struct {
-	lists []List
+	width  int
+	height int
+	lists  []List
 }
 
 func initialModel() tea.Model {
 	lists := []List{}
-	for j := range 3 {
+	for range 3 {
 		var content []string = []string{}
 		for i := range 64 {
 			content = append(
@@ -47,6 +50,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
@@ -54,13 +60,25 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	for _, list := range m.lists {
-		list, cmd = list.Update(msg)
+	for i := range m.lists {
+		m.lists[i], cmd = m.lists[i].Update(msg)
 	}
 
 	return m, cmd
 }
 
 func (m model) View() string {
-	return m.list.View()
+	lists := []string{}
+	for _, list := range m.lists {
+		lists = append(lists, list.View())
+	}
+	s := lip.JoinHorizontal(lip.Center, lists...)
+
+	return lip.Place(
+		m.width,
+		m.height,
+		lip.Center,
+		lip.Center,
+		s,
+	)
 }
