@@ -29,10 +29,10 @@ type model struct {
 func initialModel() tea.Model {
 	var m model = model{
 		tags:     []Tag{
-			NewTag("󰫢", lip.Color("#89d789")),
-			NewTag("", lip.Color("#e4677c")),
-			NewTag("󰇞", lip.Color("#f5d33d")),
-			NewTag("", lip.Color("#5c84d6")),
+			NewTag("󰫢", lip.Color("#ff4cc4")),
+			NewTag("󰅩", lip.Color("#89d789")),
+			NewTag("󰃣", lip.Color("#f5d33d")),
+			NewTag("", lip.Color("#5c84d6")),
 		},
 		selected: 0,
 	}
