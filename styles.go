@@ -18,18 +18,21 @@ var taskStyleSelected TaskStyle
 
 func InitStyles() {
 	taskStyle = TaskStyle{
-		containerStyle: lip.NewStyle(),
+		containerStyle: lip.NewStyle().
+			PaddingBottom(1),
 		nameStyle: lip.NewStyle().
 			Bold(true).
 			Foreground(lip.Color("#808080")),
 		descriptionStyle: lip.NewStyle().
-			Foreground(lip.Color("#808080")),
+			Foreground(lip.Color("#404040")),
 	}
 	taskStyleSelected = TaskStyle{
 		containerStyle: lip.NewStyle().
-			Background(lip.Color("#1c1c1c")),
+			PaddingBottom(1),
 		nameStyle: lip.NewStyle().
-			Bold(true),
+			Bold(true).
+			Background(lip.Color("7")).
+			Foreground(lip.Color("0")),
 		descriptionStyle: lip.NewStyle().
 			Foreground(lip.Color("#808080")),
 	}

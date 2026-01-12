@@ -1,13 +1,12 @@
 package main
 
 import (
-	"container/list"
 	"fmt"
 	"os"
+	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
 	lip "github.com/charmbracelet/lipgloss"
-	// lip "github.com/charmbracelet/lipgloss"
 )
 
 func main() {
@@ -22,21 +21,25 @@ func main() {
 type model struct {
 	width    int
 	height   int
-	tags     list.List
+	tags     []Tag
 	tasks    []Task
 	selected int
 }
 
 func initialModel() tea.Model {
-	tags := list.List{}
-	tags.Init()
 	var m model = model{
-		tags:     tags,
+		tags:     []Tag{
+			NewTag("󰫢", lip.Color("#89d789")),
+			NewTag("", lip.Color("#e4677c")),
+			NewTag("󰇞", lip.Color("#f5d33d")),
+			NewTag("", lip.Color("#5c84d6")),
+		},
 		selected: 0,
 	}
-	for range 3 {
-		task := NewTask(&m, "Name")
+	for i := range 7 {
+		task := NewTask(&m, fmt.Sprintf("Task #%s", strconv.Itoa(i+1)))
 		task.description = "Description"
+		task.tags = i + 7
 		m.tasks = append(m.tasks, task)
 	}
 	return m
@@ -64,6 +67,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.selected > 0 {
 				m.selected--
 			}
+		case "p":
+			fmt.Println(m.tasks[m.selected].GetTags())
 		}
 	}
 
@@ -80,8 +85,19 @@ func (m model) View() string {
 	for _, task := range m.tasks {
 		tasks = append(tasks, task.View())
 	}
-	return lip.JoinVertical(
+
+	result := lip.JoinVertical(
 		lip.Left,
 		tasks...
 	)
+
+	result = lip.Place(
+		m.width,
+		m.height,
+		lip.Center,
+		lip.Center,
+		result,
+	)
+
+	return result
 }
