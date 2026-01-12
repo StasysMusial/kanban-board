@@ -19,11 +19,12 @@ func main() {
 }
 
 type model struct {
-	width    int
-	height   int
-	tags     []Tag
-	tasks    []Task
-	selected int
+	width  int
+	height int
+
+	cursor int
+	tags   []Tag
+	tasks  []Task
 }
 
 func initialModel() tea.Model {
@@ -34,7 +35,7 @@ func initialModel() tea.Model {
 			NewTag("󰃣", lip.Color("#f5d33d")),
 			NewTag("", lip.Color("#5c84d6")),
 		},
-		selected: 0,
+		cursor: 0,
 	}
 	for i := range 7 {
 		task := NewTask(&m, fmt.Sprintf("Task #%s", strconv.Itoa(i+1)))
@@ -60,21 +61,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "j", "down":
-			if m.selected < len(m.tasks)-1 {
-				m.selected++
+			if m.cursor < len(m.tasks)-1 {
+				m.cursor++
 			}
 		case "k", "up":
-			if m.selected > 0 {
-				m.selected--
+			if m.cursor > 0 {
+				m.cursor--
 			}
 		case "p":
-			fmt.Println(m.tasks[m.selected].GetTags())
+			fmt.Println(m.tasks[m.cursor].GetTags())
 		}
 	}
 
 	for i := range len(m.tasks) {
 		m.tasks[i], cmd = m.tasks[i].Update(msg)
-		m.tasks[i].selected = (i == m.selected)
+		m.tasks[i].selected = (i == m.cursor)
 	}
 
 	return m, cmd

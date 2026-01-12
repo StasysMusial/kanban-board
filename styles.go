@@ -8,13 +8,18 @@ type TaskStyle struct {
 	containerStyle   lip.Style
 	nameStyle        lip.Style
 	descriptionStyle lip.Style
-	// tagsStyle        lip.Style
-	// tags might need some kind of custom rendering
-	// lets see...
 }
 
-var taskStyle         TaskStyle
-var taskStyleSelected TaskStyle
+type BoardStyle struct {
+	containerStyle lip.Style
+	titleStyle     lip.Style
+}
+
+var taskStyle          TaskStyle
+var taskStyleSelected  TaskStyle
+
+var boardStyle         BoardStyle
+var boardStyleSelected BoardStyle
 
 func InitStyles() {
 	taskStyle = TaskStyle{
