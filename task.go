@@ -65,7 +65,6 @@ func (t Task) View() string {
 	str_name := t.name
 	str_desc := t.description
 
-	// name := style.nameStyle.Render(str_name)
 	name := style.nameStyle.Render(str_name)
 	desc := style.descriptionStyle.Render(str_desc)
 

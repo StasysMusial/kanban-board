@@ -16,9 +16,11 @@ type Board struct {
 	scroll   int
 	cursor   int
 	tasks    []Task
+
+	mptr     *model
 }
 
-func NewBoard(title string, color lip.Color) Board {
+func NewBoard(mptr *model, title string, color lip.Color) Board {
 	return Board{
 		title:    title,
 		color:    color,
@@ -27,6 +29,7 @@ func NewBoard(title string, color lip.Color) Board {
 		scroll:   0,
 		cursor:   0,
 		tasks:    []Task{},
+		mptr:     mptr,
 	}
 }
 
@@ -35,9 +38,42 @@ func (b Board) Init() tea.Cmd {
 }
 
 func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
-	return b, nil
+	cmds := []tea.Cmd{}
+
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		b.height = msg.Height
+	}
+
+	// Update tasks
+	for i := range len(b.tasks) {
+		var cmd tea.Cmd
+		b.tasks[i], cmd = b.tasks[i].Update(msg)
+		cmds = append(cmds, cmd)
+		b.tasks[i].selected = (i == b.cursor)
+	}
+
+	return b, tea.Batch(cmds...)
 }
 
 func (b Board) View() string {
-	return ""
+	var tasks []string
+	for _, task := range b.tasks {
+		tasks = append(tasks, task.View())
+	}
+
+	result := lip.JoinVertical(
+		lip.Left,
+		tasks...
+	)
+
+	result = lip.Place(
+		b.width,
+		b.height,
+		lip.Center,
+		lip.Center,
+		result,
+	)
+
+	return result
 }

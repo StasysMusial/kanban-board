@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
 	lip "github.com/charmbracelet/lipgloss"
@@ -24,7 +23,7 @@ type model struct {
 
 	cursor int
 	tags   []Tag
-	tasks  []Task
+	boards []Board
 }
 
 func initialModel() tea.Model {
@@ -37,12 +36,6 @@ func initialModel() tea.Model {
 		},
 		cursor: 0,
 	}
-	for i := range 7 {
-		task := NewTask(&m, fmt.Sprintf("Task #%s", strconv.Itoa(i+1)))
-		task.description = "Description"
-		task.tags = i + 7
-		m.tasks = append(m.tasks, task)
-	}
 	return m
 }
 
@@ -51,7 +44,8 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
+	cmds := []tea.Cmd{}
+
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -60,45 +54,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
-		case "j", "down":
-			if m.cursor < len(m.tasks)-1 {
-				m.cursor++
-			}
-		case "k", "up":
-			if m.cursor > 0 {
-				m.cursor--
-			}
-		case "p":
-			fmt.Println(m.tasks[m.cursor].GetTags())
-		}
 	}
 
-	for i := range len(m.tasks) {
-		m.tasks[i], cmd = m.tasks[i].Update(msg)
-		m.tasks[i].selected = (i == m.cursor)
+	for i := range len(m.boards) {
+		var cmd tea.Cmd
+		m.boards[i], cmd = m.boards[i].Update(msg)
+		m.boards[i].selected = (i == m.cursor)
+		cmds = append(cmds, cmd)
 	}
 
-	return m, cmd
+	return m, tea.Batch(cmds...)
 }
 
 func (m model) View() string {
-	var tasks []string
-	for _, task := range m.tasks {
-		tasks = append(tasks, task.View())
-	}
-
-	result := lip.JoinVertical(
-		lip.Left,
-		tasks...
-	)
-
-	result = lip.Place(
-		m.width,
-		m.height,
-		lip.Center,
-		lip.Center,
-		result,
-	)
-
-	return result
+	return ""
 }
