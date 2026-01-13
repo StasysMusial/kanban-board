@@ -28,7 +28,7 @@ type model struct {
 
 func initialModel() tea.Model {
 	var m model = model{
-		tags:     []Tag{
+		tags: []Tag{
 			NewTag("󰫢", lip.Color("#ff4cc4")),
 			NewTag("󰅩", lip.Color("#89d789")),
 			NewTag("󰃣", lip.Color("#f5d33d")),
@@ -54,6 +54,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
+		}
 	}
 
 	for i := range len(m.boards) {
@@ -67,5 +68,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	var boards []string
+	for _, board := range m.boards {
+		boards = append(boards, board.View())
+	}
 	return ""
 }
