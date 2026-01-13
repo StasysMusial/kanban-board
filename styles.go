@@ -41,4 +41,12 @@ func InitStyles() {
 		descriptionStyle: lip.NewStyle().
 			Foreground(lip.Color("#808080")),
 	}
+	boardStyle = BoardStyle{
+		containerStyle: lip.NewStyle().Padding(2, 3, 1),
+		titleStyle: lip.NewStyle().Bold(true),
+	}
+	boardStyleSelected = BoardStyle{
+		containerStyle: lip.NewStyle().Padding(1, 2, 0).Border(lip.NormalBorder()),
+		titleStyle: lip.NewStyle().Bold(true),
+	}
 }

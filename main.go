@@ -36,6 +36,20 @@ func initialModel() tea.Model {
 		},
 		cursor: 0,
 	}
+	boards := []Board{}
+	for i := range 3 {
+		board := NewBoard(&m, fmt.Sprintf(" Board #%d", i+1), lip.Color("#a3b77b"))
+		tasks := []Task{}
+		for j := range 5 {
+			task := NewTask(&m, fmt.Sprintf("Task #%d", j+1))
+			task.description = "Description"
+			task.tags = j+5
+			tasks = append(tasks, task)
+		}
+		board.tasks = tasks
+		boards = append(boards, board)
+	}
+	m.boards = boards
 	return m
 }
 
@@ -54,6 +68,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
+		case "h", "left":
+			if m.cursor > 0 {
+				m.cursor--
+				for i := range m.boards {
+					m.boards[i].selected = (i == m.cursor)
+				}
+			}
+		case "l", "right":
+			if m.cursor < len(m.boards)-1 {
+				m.cursor++
+				for i := range m.boards {
+					m.boards[i].selected = (i == m.cursor)
+				}
+			}
 		}
 	}
 
@@ -72,5 +100,16 @@ func (m model) View() string {
 	for _, board := range m.boards {
 		boards = append(boards, board.View())
 	}
-	return ""
+	result := lip.JoinHorizontal(
+		lip.Top,
+		boards...
+	)
+	result = lip.Place(
+		m.width,
+		m.height,
+		lip.Center,
+		lip.Center,
+		result,
+	)
+	return result
 }

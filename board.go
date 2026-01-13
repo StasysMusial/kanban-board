@@ -43,14 +43,27 @@ func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		b.height = msg.Height
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "j", "down":
+			if b.cursor < len(b.tasks)-1 {
+				b.cursor++
+			}
+		case "k", "up":
+			if b.cursor > 0 {
+				b.cursor--
+			}
+		}
 	}
 
 	// Update tasks
-	for i := range len(b.tasks) {
-		var cmd tea.Cmd
-		b.tasks[i], cmd = b.tasks[i].Update(msg)
-		cmds = append(cmds, cmd)
-		b.tasks[i].selected = (i == b.cursor)
+	if b.selected {
+		for i := range len(b.tasks) {
+			var cmd tea.Cmd
+			b.tasks[i], cmd = b.tasks[i].Update(msg)
+			cmds = append(cmds, cmd)
+			b.tasks[i].selected = (i == b.cursor)
+		}
 	}
 
 	return b, tea.Batch(cmds...)
@@ -67,11 +80,20 @@ func (b Board) View() string {
 		tasks...
 	)
 
-	result = lip.Place(
-		b.width,
-		b.height,
-		lip.Center,
-		lip.Center,
+	var style BoardStyle
+	if b.selected {
+		style = boardStyleSelected
+		style.titleStyle = style.titleStyle.Foreground(b.color)
+	} else {
+		style = boardStyle
+	}
+
+	title := style.titleStyle.Render(b.title)
+	result = style.containerStyle.BorderForeground(b.color).Render(result)
+
+	result = lip.JoinVertical(
+		lip.Left,
+		title,
 		result,
 	)
 
