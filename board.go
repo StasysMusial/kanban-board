@@ -89,7 +89,7 @@ func (b Board) View() string {
 	}
 
 	title := style.titleStyle.Render(b.title)
-	result = style.containerStyle.BorderForeground(b.color).Render(result)
+	result = style.containerStyle.Render(result)
 
 	result = lip.JoinVertical(
 		lip.Left,

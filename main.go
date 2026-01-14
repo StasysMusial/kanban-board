@@ -38,7 +38,7 @@ func initialModel() tea.Model {
 	}
 	boards := []Board{}
 	for i := range 3 {
-		board := NewBoard(&m, fmt.Sprintf(" Board #%d", i+1), lip.Color("#a3b77b"))
+		board := NewBoard(&m, fmt.Sprintf("   Board #%d", i+1), lip.Color("#a3b77b"))
 		tasks := []Task{}
 		for j := range 5 {
 			task := NewTask(&m, fmt.Sprintf("Task #%d", j+1))
