@@ -13,12 +13,14 @@ type Task struct {
 	tags        int
 	selected    bool
 	mptr        *model
+	bptr        *Board
 }
 
-func NewTask(mptr *model, name string) Task {
+func NewTask(mptr *model, bptr *Board, name string) Task {
 	return Task{
 		name:  name,
 		mptr:  mptr,
+		bptr:  bptr,
 	}
 }
 
@@ -56,7 +58,8 @@ func (t Task) Update(msg tea.Msg) (Task, tea.Cmd) {
 
 func (t Task) View() string {
 	var style TaskStyle
-	if t.selected {
+	board := *t.bptr
+	if t.selected && board.selected {
 		style = taskStyleSelected
 	} else {
 		style = taskStyle
