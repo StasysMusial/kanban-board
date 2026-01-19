@@ -44,14 +44,16 @@ func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		b.height = msg.Height
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "j", "down":
-			if b.cursor < len(b.tasks)-1 {
-				b.cursor++
-			}
-		case "k", "up":
-			if b.cursor > 0 {
-				b.cursor--
+		if b.selected {
+			switch msg.String() {
+			case "j", "down":
+				if b.cursor < len(b.tasks)-1 {
+					b.cursor++
+				}
+			case "k", "up":
+				if b.cursor > 0 {
+					b.cursor--
+				}
 			}
 		}
 	}

@@ -36,20 +36,21 @@ func initialModel() tea.Model {
 		},
 		cursor: 0,
 	}
-	boards := []Board{}
+	m.boards = []Board{}
 	for i := range 3 {
 		board := NewBoard(&m, fmt.Sprintf("   Board #%d", i+1), lip.Color("#a3b77b"))
+		m.boards = append(m.boards, board)
+	}
+	for i := range 3 {
 		tasks := []Task{}
-		for j := range 5 {
-			task := NewTask(&m, &board, fmt.Sprintf("Task #%d", j+1))
+		for j := range 5+i {
+			task := NewTask(&m, &m.boards[i], fmt.Sprintf("Task #%d", j+1))
 			task.description = "Description"
 			task.tags = j+5
 			tasks = append(tasks, task)
 		}
-		board.tasks = tasks
-		boards = append(boards, board)
+		m.boards[i].tasks = tasks
 	}
-	m.boards = boards
 	return m
 }
 
