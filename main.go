@@ -26,6 +26,30 @@ type model struct {
 	boards []Board
 }
 
+func (m *model) IncCursor() {
+	if m.cursor < len(m.boards)-1 {
+		m.cursor++
+	} else {
+		// m.cursor = 0
+	}
+	for i := range m.boards {
+		selected := (i == m.cursor)
+		m.boards[i].SetSelected(selected)
+	}
+}
+
+func (m *model) DecrCursor() {
+	if m.cursor > 0 {
+		m.cursor--
+	} else {
+		// m.cursor = len(m.boards)-1
+	}
+	for i := range m.boards {
+		selected := (i == m.cursor)
+		m.boards[i].SetSelected(selected)
+	}
+}
+
 func initialModel() tea.Model {
 	var m model = model{
 		tags: []Tag{
@@ -37,16 +61,22 @@ func initialModel() tea.Model {
 		cursor: 0,
 	}
 	m.boards = []Board{}
-	for i := range 3 {
-		board := NewBoard(&m, fmt.Sprintf("   Board #%d", i+1), lip.Color("#a3b77b"))
+	b_colors := []lip.Color{
+		lip.Color("1"),
+		lip.Color("2"),
+		lip.Color("3"),
+		lip.Color("4"),
+	}
+	for i := range 4 {
+		board := NewBoard(&m, fmt.Sprintf("BOARD #%d", i+1), b_colors[i])
 		m.boards = append(m.boards, board)
 	}
-	for i := range 3 {
+	for i := range len(m.boards) {
 		tasks := []Task{}
-		for j := range 5+i {
+		for j := range 14+i {
 			task := NewTask(&m, &m.boards[i], fmt.Sprintf("Task #%d", j+1))
 			task.description = "Description"
-			task.tags = j+5
+			task.tags = j+i
 			tasks = append(tasks, task)
 		}
 		m.boards[i].tasks = tasks
@@ -65,24 +95,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+		width := m.width / len(m.boards)
+		for i := range len(m.boards) {
+			m.boards[i].width = width-2
+			m.boards[i].SetHeight(m.height-5)
+		}
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "h", "left":
-			if m.cursor > 0 {
-				m.cursor--
-				for i := range m.boards {
-					m.boards[i].selected = (i == m.cursor)
-				}
-			}
+			m.DecrCursor()
 		case "l", "right":
-			if m.cursor < len(m.boards)-1 {
-				m.cursor++
-				for i := range m.boards {
-					m.boards[i].selected = (i == m.cursor)
-				}
-			}
+			m.IncCursor()
 		}
 	}
 
@@ -104,6 +129,11 @@ func (m model) View() string {
 	result := lip.JoinHorizontal(
 		lip.Top,
 		boards...
+	)
+	result = lip.JoinVertical(
+		lip.Left,
+		result,
+		uiStyle.helpStyle.Width(m.width).AlignHorizontal(lip.Center).Render("q - quit   h/j/k/l - navigate"),
 	)
 	result = lip.Place(
 		m.width,

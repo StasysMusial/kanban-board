@@ -1,23 +1,27 @@
 package main
 
 import (
+	"fmt"
+
 	tea "github.com/charmbracelet/bubbletea"
 	lip "github.com/charmbracelet/lipgloss"
 )
 
 type Board struct {
-	width    int
-	height   int
+	width       int
+	height      int
 
-	title    string
-	color    lip.Color
+	title       string
+	color       lip.Color
 
-	selected bool
-	scroll   int
-	cursor   int
-	tasks    []Task
+	selected    bool
+	scroll      int
+	cursor      int
+	tasks       []Task
 
-	mptr     *model
+	shown_tasks int
+
+	mptr        *model
 }
 
 func NewBoard(mptr *model, title string, color lip.Color) Board {
@@ -33,6 +37,41 @@ func NewBoard(mptr *model, title string, color lip.Color) Board {
 	}
 }
 
+func (b *Board) IncCursor() {
+	if b.cursor < len(b.tasks)-1 {
+		b.cursor++
+		if b.cursor >= b.shown_tasks + b.scroll {
+			b.scroll++
+		}
+	} else {
+		b.cursor = 0
+		b.scroll = 0
+	}
+}
+
+func (b *Board) DecrCursor() {
+	if b.cursor > 0 {
+		b.cursor--
+		if b.cursor < b.scroll {
+			b.scroll--
+		}
+	} else {
+		b.cursor = len(b.tasks)-1
+		b.scroll = b.cursor - (b.shown_tasks-1)
+	}
+}
+
+func (b *Board) SetSelected(selected bool) {
+	b.selected = selected
+	b.cursor = 0
+	b.scroll = 0
+}
+
+func (b *Board) SetHeight(height int) {
+	b.height = height
+	b.shown_tasks = height / 3
+}
+
 func (b Board) Init() tea.Cmd {
 	return nil
 }
@@ -41,19 +80,15 @@ func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
 	cmds := []tea.Cmd{}
 
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		b.height = msg.Height
+	// case tea.WindowSizeMsg:
+	// 	b.height = msg.Height
 	case tea.KeyMsg:
 		if b.selected {
 			switch msg.String() {
 			case "j", "down":
-				if b.cursor < len(b.tasks)-1 {
-					b.cursor++
-				}
+				b.IncCursor()
 			case "k", "up":
-				if b.cursor > 0 {
-					b.cursor--
-				}
+				b.DecrCursor()
 			}
 		}
 	}
@@ -73,7 +108,10 @@ func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
 
 func (b Board) View() string {
 	var tasks []string
-	for _, task := range b.tasks {
+	for i, task := range b.tasks {
+		if i < b.scroll {
+			continue
+		}
 		tasks = append(tasks, task.View())
 	}
 
@@ -81,6 +119,12 @@ func (b Board) View() string {
 		lip.Left,
 		tasks...
 	)
+
+	result = lip.NewStyle().
+		Width(b.width-4).
+		Height(b.height).
+		MaxHeight(b.height).
+		Render(result)
 
 	var style BoardStyle
 	if b.selected {
@@ -90,7 +134,10 @@ func (b Board) View() string {
 		style = boardStyle
 	}
 
-	title := style.titleStyle.Render(b.title)
+	title := style.titleStyle.
+		Width(b.width).
+		AlignHorizontal(lip.Center).
+		Render(fmt.Sprintf("-- %s --", b.title))
 	result = style.containerStyle.Render(result)
 
 	result = lip.JoinVertical(

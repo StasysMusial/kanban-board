@@ -61,6 +61,8 @@ func (t Task) View() string {
 	board := *t.bptr
 	if t.selected && board.selected {
 		style = taskStyleSelected
+	} else if !board.selected {
+		style = taskStyleUnfocused
 	} else {
 		style = taskStyle
 	}
@@ -73,6 +75,10 @@ func (t Task) View() string {
 
 	tags := ""
 	for _, tag := range t.GetTags() {
+		// tag color muting in unfocussed mode
+		if !board.selected {
+			tag.color = lip.Color("#646464")
+		}
 		tags += fmt.Sprintf(" %s", tag.View())
 	}
 
@@ -89,12 +95,7 @@ func (t Task) View() string {
 		desc,
 	)
 
-	container := style.containerStyle.Render(str_container)
-
-	result := lip.JoinVertical(
-		lip.Right,
-		container,
-	)
+	result := style.containerStyle.MaxWidth(board.width-4).Render(str_container)
 
 	return result
 }
