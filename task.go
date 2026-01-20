@@ -57,6 +57,7 @@ func (t Task) Update(msg tea.Msg) (Task, tea.Cmd) {
 }
 
 func (t Task) View() string {
+	// select style
 	var style TaskStyle
 	board := *t.bptr
 	if t.selected && board.selected {
@@ -67,14 +68,22 @@ func (t Task) View() string {
 		style = taskStyle
 	}
 
+	// get base strings
 	str_name := t.name
 	str_desc := t.description
+	if len(str_desc) == 0 {
+		str_desc = "..."
+	}
 
+	// render stylization
 	name := style.nameStyle.Render(str_name)
 	desc := style.descriptionStyle.Render(str_desc)
 
+	// render tags
 	tags := ""
-	for _, tag := range t.GetTags() {
+	taskTags := t.GetTags()
+	for i := range len(taskTags) {
+		tag := taskTags[(len(taskTags)-1)-i]
 		// tag color muting in unfocussed mode
 		if !board.selected {
 			tag.color = lip.Color("#646464")
@@ -82,19 +91,33 @@ func (t Task) View() string {
 		tags += fmt.Sprintf(" %s", tag.View())
 	}
 
+	// create spacing between name and tags (unused for now)
+	tags_width := lip.Width(tags)
+	name_width := lip.Width(name)
+	name_tag_distance := (board.width-4) - (tags_width+name_width)
+	name_tag_spacing := ""
+	for range name_tag_distance {
+		name_tag_spacing += " "
+	}
+
+	// assemble name and tags
 	title := lip.JoinHorizontal(
 		lip.Top,
 		name,
+		// name_tag_spacing,
 		tags,
 	)
 
 
+	// put together full task
+	// put together full task
 	str_container := lip.JoinVertical(
 		lip.Left,
 		title,
 		desc,
 	)
 
+	// render container
 	result := style.containerStyle.MaxWidth(board.width-4).Render(str_container)
 
 	return result

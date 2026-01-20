@@ -9,6 +9,7 @@ type Tag struct {
 	color lip.Color
 }
 
+// tags added last have higher priority during sorting
 func NewTag(icon string, color lip.Color) Tag {
 	return Tag{
 		icon:  icon,

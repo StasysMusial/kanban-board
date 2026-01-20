@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	tea "github.com/charmbracelet/bubbletea"
 	lip "github.com/charmbracelet/lipgloss"
@@ -43,9 +44,9 @@ func (b *Board) IncCursor() {
 		if b.cursor >= b.shown_tasks + b.scroll {
 			b.scroll++
 		}
-	} else {
-		b.cursor = 0
-		b.scroll = 0
+	// } else {
+	// 	b.cursor = 0
+	// 	b.scroll = 0
 	}
 }
 
@@ -55,10 +56,67 @@ func (b *Board) DecrCursor() {
 		if b.cursor < b.scroll {
 			b.scroll--
 		}
-	} else {
-		b.cursor = len(b.tasks)-1
-		b.scroll = b.cursor - (b.shown_tasks-1)
+	// } else {
+	// 	b.cursor = len(b.tasks)-1
+	// 	b.scroll = b.cursor - (b.shown_tasks-1)
 	}
+}
+
+func (b Board) IsEmpty() bool {
+	return (len(b.tasks) == 0)
+}
+
+func (b *Board) AddTask(task Task, index int) {
+	if index < 0 || index > len(b.tasks) {
+		index = 0
+	}
+	tasks := []Task{}
+	tasks = append(tasks, b.tasks[:index]...)
+	tasks = append(tasks, task)
+	tasks = append(tasks, b.tasks[index:]...)
+	b.tasks = tasks
+}
+
+func (b *Board) RemoveTask(index int) {
+	tasks := []Task{}
+	tasks = append(b.tasks[:index], b.tasks[index+1:]...)
+	b.tasks = tasks
+	if len(b.tasks) == 0 {
+		b.cursor = 0
+	} else if b.cursor >= len(b.tasks) {
+		b.cursor = len(b.tasks)-1
+	}
+	if b.cursor < b.scroll {
+		b.scroll--
+	}
+}
+
+// swaps task at index with index below
+func (b *Board) SwapTask(index int) {
+	index1 := index
+	index2 := index-1
+
+	if index1 >= len(b.tasks) {
+		// index1 = 0
+		return
+	}
+	if index2 < 0 {
+		// index2 = len(b.tasks)-1
+		return
+	}
+
+	t1 := b.tasks[index1]
+	t2 := b.tasks[index2]
+	b.tasks[index1] = t2
+	b.tasks[index2] = t1
+}
+
+func (b *Board) MoveTaskUp() {
+	b.SwapTask(b.cursor)
+}
+
+func (b *Board) MoveTaskDown() {
+	b.SwapTask(b.cursor+1)
 }
 
 func (b *Board) SetSelected(selected bool) {
@@ -72,6 +130,16 @@ func (b *Board) SetHeight(height int) {
 	b.shown_tasks = height / 3
 }
 
+func (b *Board) SortByTags() {
+	tasks := b.tasks
+	sort.Slice(tasks, func(i, j int) bool {
+		t1 := tasks[i]
+		t2 := tasks[j]
+		return t1.tags > t2.tags
+	})
+	b.tasks = tasks
+}
+
 func (b Board) Init() tea.Cmd {
 	return nil
 }
@@ -83,12 +151,27 @@ func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
 	// case tea.WindowSizeMsg:
 	// 	b.height = msg.Height
 	case tea.KeyMsg:
-		if b.selected {
+		if b.selected && !b.IsEmpty() {
 			switch msg.String() {
-			case "j", "down":
+			case "j":
 				b.IncCursor()
-			case "k", "up":
+			case "k":
 				b.DecrCursor()
+			case "J":
+				b.MoveTaskDown()
+				b.IncCursor()
+			case "K":
+				b.MoveTaskUp()
+				b.DecrCursor()
+			case "g":
+				b.cursor = 0
+				b.scroll = 0
+			case "G":
+				b.cursor = len(b.tasks)-1
+				b.scroll = b.cursor - b.shown_tasks
+				b.scroll += 1
+			case "s":
+				b.SortByTags()
 			}
 		}
 	}
@@ -115,6 +198,25 @@ func (b Board) View() string {
 		tasks = append(tasks, task.View())
 	}
 
+	upScroller   := ""
+	downScroller := ""
+
+	if b.scroll > 0 {
+		upScroller = "..."
+	}
+
+	if b.scroll < len(b.tasks) - b.shown_tasks {
+		downScroller = "..."
+	}
+
+	var style BoardStyle
+	if b.selected {
+		style = boardStyleSelected
+		style.titleStyle = style.titleStyle.Foreground(b.color)
+	} else {
+		style = boardStyle
+	}
+
 	result := lip.JoinVertical(
 		lip.Left,
 		tasks...
@@ -126,13 +228,12 @@ func (b Board) View() string {
 		MaxHeight(b.height).
 		Render(result)
 
-	var style BoardStyle
-	if b.selected {
-		style = boardStyleSelected
-		style.titleStyle = style.titleStyle.Foreground(b.color)
-	} else {
-		style = boardStyle
-	}
+	result = lip.JoinVertical(
+		lip.Left,
+		style.scrollerStyle.Width(b.width-4).AlignHorizontal(lip.Center).Render(upScroller),
+		result,
+		style.scrollerStyle.Width(b.width-4).AlignHorizontal(lip.Center).Render(downScroller),
+	)
 
 	title := style.titleStyle.
 		Width(b.width).

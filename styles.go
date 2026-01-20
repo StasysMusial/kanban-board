@@ -13,11 +13,13 @@ type TaskStyle struct {
 type BoardStyle struct {
 	containerStyle lip.Style
 	titleStyle     lip.Style
+	scrollerStyle  lip.Style
 }
 
-type UIStyle struct {
-	titleStyle lip.Style
-	helpStyle  lip.Style
+type HelpStyle struct {
+	containerStyle lip.Style
+	keyStyle       lip.Style
+	actionStyle    lip.Style
 }
 
 var taskStyle          TaskStyle
@@ -27,9 +29,17 @@ var taskStyleUnfocused TaskStyle
 var boardStyle         BoardStyle
 var boardStyleSelected BoardStyle
 
-var uiStyle            UIStyle
+var helpStyle          HelpStyle
+
+var msgInfoColor  lip.Color
+var msgWarnColor  lip.Color
+var msgErrorColor lip.Color
 
 func InitStyles() {
+	msgInfoColor = lip.Color("#678899")
+	msgWarnColor = lip.Color("#999967")
+	msgErrorColor = lip.Color("#996777")
+
 	taskStyle = TaskStyle{
 		containerStyle: lip.NewStyle().
 			PaddingBottom(1),
@@ -72,23 +82,28 @@ func InitStyles() {
 	}
 	boardStyle = BoardStyle{
 		containerStyle: lip.NewStyle().
-			Padding(1, 2, 0).
+			Padding(0, 2).
 			Border(lip.RoundedBorder()).
 			BorderForeground(lip.Color("#404040")),
 		titleStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
+		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 	}
 	boardStyleSelected = BoardStyle{
 		containerStyle: lip.NewStyle().
-			Padding(1, 2, 0).
+			Padding(0, 2).
 			Border(lip.RoundedBorder()).
 			BorderForeground(lip.Color("7")),
 		titleStyle: lip.NewStyle().Bold(true),
+		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
 	}
-	uiStyle = UIStyle{
-		helpStyle: lip.NewStyle().
+	helpStyle = HelpStyle{
+		containerStyle: lip.NewStyle().
+			MaxHeight(1).
+			Height(1),
+		keyStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#505050")),
+		actionStyle: lip.NewStyle().
 			Foreground(lip.Color("#404040")),
-		titleStyle: lip.NewStyle().
-			Foreground(lip.Color("0")).
-			Background(lip.Color("7")),
 	}
 }
