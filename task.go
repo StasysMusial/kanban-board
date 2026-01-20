@@ -108,7 +108,6 @@ func (t Task) View() string {
 		tags,
 	)
 
-
 	// put together full task
 	// put together full task
 	str_container := lip.JoinVertical(
