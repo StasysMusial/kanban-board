@@ -141,6 +141,9 @@ func (m *model) PasteTask(below bool) {
 	board := m.boards[m.cursor]
 	m.clipboard.bptr = &m.boards[m.cursor]
 	m.boards[m.cursor].AddTask(m.clipboard, board.cursor+offset)
+	if below {
+		m.boards[m.cursor].IncCursor()
+	}
 	m.Print(fmt.Sprintf("Pasted [%s] to [%s]", m.clipboard.name, board.title), msgInfoColor)
 }
 
