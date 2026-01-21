@@ -22,6 +22,10 @@ type HelpStyle struct {
 	actionStyle    lip.Style
 }
 
+type EditorStyle struct {
+	containerStyle lip.Style
+}
+
 var taskStyle          TaskStyle
 var taskStyleSelected  TaskStyle
 var taskStyleUnfocused TaskStyle
@@ -30,6 +34,8 @@ var boardStyle         BoardStyle
 var boardStyleSelected BoardStyle
 
 var helpStyle          HelpStyle
+
+var editorStyle        EditorStyle
 
 var msgInfoColor  lip.Color
 var msgWarnColor  lip.Color
@@ -105,5 +111,9 @@ func InitStyles() {
 			Foreground(lip.Color("#505050")),
 		actionStyle: lip.NewStyle().
 			Foreground(lip.Color("#404040")),
+	}
+	editorStyle = EditorStyle{
+		containerStyle: lip.NewStyle().
+			Padding(2, 4, 2),
 	}
 }

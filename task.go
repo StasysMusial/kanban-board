@@ -36,9 +36,8 @@ func (t Task) HasTag(index int) bool {
 	return 0 < (t.tags & (1 << index))
 }
 
-func (t Task) GetTags() []Tag {
+func (t Task) GetTags(m model) []Tag {
 	tags := []Tag{}
-	m := *t.mptr
 	for i, tag := range m.tags {
 		if t.HasTag(i) {
 			tags = append(tags, tag)
@@ -56,13 +55,12 @@ func (t Task) Update(msg tea.Msg) (Task, tea.Cmd) {
 	return t, cmd
 }
 
-func (t Task) View() string {
+func (t Task) View(m model, b Board) string {
 	// select style
 	var style TaskStyle
-	board := *t.bptr
-	if t.selected && board.selected {
+	if t.selected && b.selected {
 		style = taskStyleSelected
-	} else if !board.selected {
+	} else if !b.selected {
 		style = taskStyleUnfocused
 	} else {
 		style = taskStyle
@@ -81,11 +79,11 @@ func (t Task) View() string {
 
 	// render tags
 	tags := ""
-	taskTags := t.GetTags()
+	taskTags := t.GetTags(m)
 	for i := range len(taskTags) {
 		tag := taskTags[(len(taskTags)-1)-i]
 		// tag color muting in unfocussed mode
-		if !board.selected {
+		if !b.selected {
 			tag.color = lip.Color("#646464")
 		}
 		tags += fmt.Sprintf(" %s", tag.View())
@@ -94,7 +92,7 @@ func (t Task) View() string {
 	// create spacing between name and tags (unused for now)
 	tags_width := lip.Width(tags)
 	name_width := lip.Width(name)
-	name_tag_distance := (board.width-4) - (tags_width+name_width)
+	name_tag_distance := (b.width-4) - (tags_width+name_width)
 	name_tag_spacing := ""
 	for range name_tag_distance {
 		name_tag_spacing += " "
@@ -117,7 +115,7 @@ func (t Task) View() string {
 	)
 
 	// render container
-	result := style.containerStyle.MaxWidth(board.width-4).Render(str_container)
+	result := style.containerStyle.MaxWidth(b.width-4).Render(str_container)
 
 	return result
 }

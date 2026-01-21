@@ -43,7 +43,7 @@ func (h Help) View() string {
 	result := lip.JoinHorizontal(lip.Top, mappings...)
 	result = helpStyle.containerStyle.
 		Width(h.width).
-		AlignHorizontal(lip.Center).
+		// AlignHorizontal(lip.Center).
 		Render(result)
 
 	return result

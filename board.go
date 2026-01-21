@@ -21,11 +21,9 @@ type Board struct {
 	tasks       []Task
 
 	shown_tasks int
-
-	mptr        *model
 }
 
-func NewBoard(mptr *model, title string, color lip.Color) Board {
+func NewBoard(title string, color lip.Color) Board {
 	return Board{
 		title:    title,
 		color:    color,
@@ -34,7 +32,6 @@ func NewBoard(mptr *model, title string, color lip.Color) Board {
 		scroll:   0,
 		cursor:   0,
 		tasks:    []Task{},
-		mptr:     mptr,
 	}
 }
 
@@ -144,14 +141,14 @@ func (b Board) Init() tea.Cmd {
 	return nil
 }
 
-func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
+func (b Board) Update(msg tea.Msg, m model) (Board, tea.Cmd) {
 	cmds := []tea.Cmd{}
 
 	switch msg := msg.(type) {
 	// case tea.WindowSizeMsg:
 	// 	b.height = msg.Height
 	case tea.KeyMsg:
-		if b.selected && !b.IsEmpty() {
+		if m.mode == MODE_NORMAL && b.selected && !b.IsEmpty() {
 			switch msg.String() {
 			case "j":
 				b.IncCursor()
@@ -189,13 +186,13 @@ func (b Board) Update(msg tea.Msg) (Board, tea.Cmd) {
 	return b, tea.Batch(cmds...)
 }
 
-func (b Board) View() string {
+func (b Board) View(m model) string {
 	var tasks []string
 	for i, task := range b.tasks {
 		if i < b.scroll {
 			continue
 		}
-		tasks = append(tasks, task.View())
+		tasks = append(tasks, task.View(m, b))
 	}
 
 	upScroller   := ""

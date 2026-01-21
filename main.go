@@ -9,6 +9,12 @@ import (
 	lip "github.com/charmbracelet/lipgloss"
 )
 
+type Mode int
+const(
+	MODE_NORMAL Mode = iota
+	MODE_EDIT
+)
+
 func main() {
 	InitStyles()
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
@@ -22,9 +28,11 @@ type model struct {
 	width     int
 	height    int
 
+	mode      Mode
 	cursor    int
 	tags      []Tag
 	boards    []Board
+	editor    Editor
 	help      Help
 
 	clipboard Task
@@ -40,6 +48,7 @@ func initialModel() tea.Model {
 			NewTag("󰅩", lip.Color("#89d789")),
 			NewTag("󰫢", lip.Color("#ff4cc4")),
 		},
+		mode: MODE_NORMAL,
 		help: Help{},
 		cursor: 0,
 		can_paste: false,
@@ -47,6 +56,9 @@ func initialModel() tea.Model {
 
 	InitKeyContexts()
 	m.help.SetKeyContext(KEY_CONTEXT_BOARDS)
+
+	// set up editor
+	m.editor = NewEditor(&m)
 
 	// prepare board colors
 	b_colors := []lip.Color{
@@ -59,8 +71,8 @@ func initialModel() tea.Model {
 
 	// set up boards
 	m.boards = []Board{}
-	for i := range 5 {
-		board := NewBoard(&m, fmt.Sprintf("BOARD #%d", i+1), b_colors[i])
+	for i := range 4 {
+		board := NewBoard(fmt.Sprintf("BOARD #%d", i+1), b_colors[i])
 		m.boards = append(m.boards, board)
 	}
 
@@ -79,10 +91,19 @@ func initialModel() tea.Model {
 	return m
 }
 
+func (m *model) SendTaskToEditor(task Task) {
+	m.editor = m.editor.LoadTask(task)
+	// m.Print(fmt.Sprintf("Loaded [%s] into editor", task.name), msgWarnColor)
+}
+
+func (m model) GetBoardCount() int {
+	return len(m.boards)
+}
+
 func (m *model) Print(message string, color lip.Color) {
 	m.message = lip.NewStyle().
 		Foreground(color).
-		Render(fmt.Sprintf("→ %s", message))
+		Render(fmt.Sprintf(" → %s", message))
 }
 
 func (m *model) IncCursor() {
@@ -195,42 +216,57 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		width := m.width / len(m.boards)
-		for i := range len(m.boards) {
-			m.boards[i].width = width-2
+		boardsCount := m.GetBoardCount()
+		boardsAreaWidth := m.width-EDITOR_WIDTH
+		width := boardsAreaWidth / len(m.boards)
+		width -= 2
+		for i := range boardsCount {
+			m.boards[i].width = width
 			m.boards[i].SetHeight(m.height-7)
 		}
 	// process input
 	case tea.KeyMsg:
-		// m.Print("", lip.Color("0"))
-		switch msg.String() {
-		case "q":
-			return m, tea.Quit
-		case "a":
-			m.AddTask()
-		case "p":
-			m.PasteTaskBelow()
-		case "P":
-			m.PasteTaskAbove()
-		case "h":
-			m.DecrCursor()
-		case "l":
-			m.IncCursor()
-		}
-		// only do this stuff if selected board has tasks inside it
-		if !m.boards[m.cursor].IsEmpty() {
+		switch m.mode {
+		case MODE_EDIT:
 			switch msg.String() {
-			case "H":
-				m.MoveTaskLeft()
+			case "enter":
+				m.mode = MODE_NORMAL
+				m.editor.name.Blur()
+			}
+			// edit mode mappings go here
+		case MODE_NORMAL:
+			switch msg.String() {
+			case "q":
+				return m, tea.Quit
+			case "a":
+				m.AddTask()
+			case "p":
+				m.PasteTaskBelow()
+			case "P":
+				m.PasteTaskAbove()
+			case "h":
 				m.DecrCursor()
-			case "L":
-				m.MoveTaskRight()
+			case "l":
 				m.IncCursor()
-			case "x":
-				m.CopyTask()
-				m.RemoveTask()
-			case "y":
-				m.CopyTask()
+			case "enter":
+				m.mode = MODE_EDIT
+				m.editor.name.Focus()
+			}
+			// only do this stuff if selected board has tasks inside it
+			if !m.boards[m.cursor].IsEmpty() {
+				switch msg.String() {
+				case "H":
+					m.MoveTaskLeft()
+					m.DecrCursor()
+				case "L":
+					m.MoveTaskRight()
+					m.IncCursor()
+				case "x":
+					m.CopyTask()
+					m.RemoveTask()
+				case "y":
+					m.CopyTask()
+				}
 			}
 		}
 	}
@@ -238,9 +274,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// update boards
 	for i := range len(m.boards) {
 		var cmd tea.Cmd
-		m.boards[i], cmd = m.boards[i].Update(msg)
+		m.boards[i], cmd = m.boards[i].Update(msg, m)
 		m.boards[i].selected = (i == m.cursor)
 		cmds = append(cmds, cmd)
+	}
+
+	// update editor
+	var editorCmd tea.Cmd
+	m.editor, editorCmd = m.editor.Update(msg, m)
+	cmds = append(cmds, editorCmd)
+
+	if m.mode == MODE_NORMAL {
+		board := m.boards[m.cursor]
+		m.SendTaskToEditor(board.tasks[board.cursor])
 	}
 
 	// update help section
@@ -254,11 +300,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	var boards []string
 	for _, board := range m.boards {
-		boards = append(boards, board.View())
+		boards = append(boards, board.View(m))
 	}
 	result := lip.JoinHorizontal(
 		lip.Top,
 		boards...
+	)
+	result = lip.JoinHorizontal(
+		lip.Top,
+		result,
+		m.editor.View(),
 	)
 	result = lip.JoinVertical(
 		lip.Left,
