@@ -102,10 +102,7 @@ func (e Editor) View(m model) string {
 			style = editorStyleDesc
 		}
 	}
-	// descUpScroller := " "
-	// descDownScroller := " "
-	// style.scrollerStyle = style.scrollerStyle.Width(EDITOR_WIDTH-8).AlignHorizontal(lip.Center)
-	name := style.nameFieldStyle.Render(e.name.View())
+	name := e.name.View()
 	desc := e.desc.View()
 	result := lip.JoinVertical(
 		lip.Left,
@@ -115,9 +112,7 @@ func (e Editor) View(m model) string {
 		"",
 		style.descLabelStyle.Render(" Description "),
 		"",
-		// style.scrollerStyle.Render(descUpScroller),
 		desc,
-		// style.scrollerStyle.Render(descDownScroller),
 	)
 	result = editorStyle.containerStyle.Render(result)
 	return result

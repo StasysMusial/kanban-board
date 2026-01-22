@@ -76,18 +76,6 @@ func initialModel() tea.Model {
 		m.boards = append(m.boards, board)
 	}
 
-	// create tasks
-	for i := range len(m.boards) {
-		tasks := []Task{}
-		for j := range 3 {
-			task := NewTask(&m, fmt.Sprintf("Task #%d", j+1))
-			task.description = "Description"
-			task.tags = j+i
-			tasks = append(tasks, task)
-		}
-		m.boards[i].tasks = tasks
-	}
-
 	return m
 }
 
@@ -126,7 +114,7 @@ func (m *model) DecrCursor() {
 }
 
 func (m *model) AddTask() {
-	task := NewTask(m, "New Task")
+	task := NewTask(m, "")
 	m.boards[m.cursor].AddTask(task, m.boards[m.cursor].cursor+1)
 	m.boards[m.cursor].IncCursor()
 	m.boards[m.cursor].tasks[m.boards[m.cursor].cursor].tags = rand.Int() % 16
@@ -216,8 +204,6 @@ func (m *model) EnterModeEdit() {
 	m.editor.name.Focus()
 	m.editor.name.CursorEnd()
 	m.editor.mode = EDIT_MODE_NAME
-	m.help.context_data = keyContextTextEdit
-
 }
 
 func (m *model) EnterModeNormal() {
@@ -233,6 +219,7 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	cmds := []tea.Cmd{}
+	deferredEdit := false
 
 	switch msg := msg.(type) {
 	// process window size
@@ -271,6 +258,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			case "a":
 				m.AddTask()
+				deferredEdit = true
 			case "p":
 				m.PasteTaskBelow()
 			case "P":
@@ -316,6 +304,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	if m.mode == MODE_NORMAL {
 		m.SendTaskToEditor(m.GetSelectedTask())
+	}
+
+	if deferredEdit {
+		m.EnterModeEdit()
+	}
+
+	if m.mode == MODE_EDIT {
+		switch m.editor.mode {
+		case EDIT_MODE_NAME:
+			m.help.context_data = keyContextTask
+		case EDIT_MODE_DESC:
+			m.help.context_data = keyContextTaskDesc
+		}
 	}
 
 	// update help section
