@@ -46,6 +46,8 @@ const (
 type TextEditAction int
 const (
 	TEXTEDIT_ACTION_EXIT TextEditAction = iota
+	TEXTEDIT_ACTION_CONFIRM
+	TEXTEDIT_ACTION_FIELD
 	TEXTEDIT_ACTIONS
 )
 
@@ -147,8 +149,14 @@ func InitKeyContexts() {
 	keyContextTask.actions[TASK_ACTION_SUBMIT]       = "submit"
 
 	// setup text edit key and action labels
-	keyContextTextEdit.keys[TEXTEDIT_ACTION_EXIT]    = "esc"
-	keyContextTextEdit.actions[TEXTEDIT_ACTION_EXIT] = "stop editing"
+	keyContextTextEdit.keys[TEXTEDIT_ACTION_CONFIRM]    = "enter"
+	keyContextTextEdit.actions[TEXTEDIT_ACTION_CONFIRM] = "confirm"
+
+	keyContextTextEdit.keys[TEXTEDIT_ACTION_EXIT]       = "esc"
+	keyContextTextEdit.actions[TEXTEDIT_ACTION_EXIT]    = "cancel"
+
+	keyContextTextEdit.keys[TEXTEDIT_ACTION_FIELD]      = "tab"
+	keyContextTextEdit.actions[TEXTEDIT_ACTION_FIELD]   = "toggle name/description"
 
 	// populate key context array
 	keyContexts[KEY_CONTEXT_BOARDS] = keyContextBoards

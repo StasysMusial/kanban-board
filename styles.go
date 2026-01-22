@@ -24,18 +24,27 @@ type HelpStyle struct {
 
 type EditorStyle struct {
 	containerStyle lip.Style
+	scrollerStyle  lip.Style
+
+	nameLabelStyle lip.Style
+	nameFieldStyle lip.Style
+
+	descLabelStyle lip.Style
+	descFieldStyle lip.Style
 }
 
-var taskStyle          TaskStyle
-var taskStyleSelected  TaskStyle
-var taskStyleUnfocused TaskStyle
+var taskStyle           TaskStyle
+var taskStyleSelected   TaskStyle
+var taskStyleUnfocused  TaskStyle
 
-var boardStyle         BoardStyle
-var boardStyleSelected BoardStyle
+var boardStyle          BoardStyle
+var boardStyleSelected  BoardStyle
 
-var helpStyle          HelpStyle
+var helpStyle           HelpStyle
 
-var editorStyle        EditorStyle
+var editorStyle         EditorStyle
+var editorStyleName     EditorStyle
+var editorStyleDesc     EditorStyle
 
 var msgInfoColor  lip.Color
 var msgWarnColor  lip.Color
@@ -67,7 +76,7 @@ func InitStyles() {
 			MaxHeight(1).
 			Height(1).
 			Background(lip.Color("7")).
-			Foreground(lip.Color("0")),
+			Foreground(lip.Color("#1c1c1c")),
 		descriptionStyle: lip.NewStyle().
 			Foreground(lip.Color("#808080")).
 			MaxHeight(1).
@@ -90,7 +99,7 @@ func InitStyles() {
 		containerStyle: lip.NewStyle().
 			Padding(0, 2).
 			Border(lip.RoundedBorder()).
-			BorderForeground(lip.Color("#404040")),
+			BorderForeground(lip.Color("#2d2d2d")),
 		titleStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 	}
@@ -98,7 +107,7 @@ func InitStyles() {
 		containerStyle: lip.NewStyle().
 			Padding(0, 2).
 			Border(lip.RoundedBorder()).
-			BorderForeground(lip.Color("7")),
+			BorderForeground(lip.Color("#646464")),
 		titleStyle: lip.NewStyle().Bold(true),
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
 	}
@@ -115,5 +124,52 @@ func InitStyles() {
 	editorStyle = EditorStyle{
 		containerStyle: lip.NewStyle().
 			Padding(2, 4, 2),
+		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
+		nameLabelStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#1c1c1c")).
+			Background(lip.Color("#505050")),
+		nameFieldStyle: lip.NewStyle().
+			Foreground(lip.Color("7")),
+		descLabelStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#1c1c1c")).
+			Background(lip.Color("#505050")),
+		descFieldStyle: lip.NewStyle().
+			Foreground(lip.Color("7")),
+	}
+	editorStyleName = EditorStyle{
+		containerStyle: lip.NewStyle().
+			Padding(2, 4, 2),
+		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
+		nameLabelStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#1c1c1c")).
+			Background(lip.Color("7")),
+		nameFieldStyle: lip.NewStyle().
+			Foreground(lip.Color("7")),
+		descLabelStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#1c1c1c")).
+			Background(lip.Color("#505050")),
+		descFieldStyle: lip.NewStyle().
+			Foreground(lip.Color("7")),
+	}
+	editorStyleDesc = EditorStyle{
+		containerStyle: lip.NewStyle().
+			Padding(2, 4, 2),
+		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
+		nameLabelStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#1c1c1c")).
+			Background(lip.Color("#505050")),
+		nameFieldStyle: lip.NewStyle().
+			Foreground(lip.Color("7")),
+		descLabelStyle: lip.NewStyle().
+			Bold(true).
+			Foreground(lip.Color("#1c1c1c")).
+			Background(lip.Color("7")),
+		descFieldStyle: lip.NewStyle().
+			Foreground(lip.Color("7")),
 	}
 }

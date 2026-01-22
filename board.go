@@ -207,7 +207,7 @@ func (b Board) View(m model) string {
 	}
 
 	var style BoardStyle
-	if b.selected {
+	if b.selected && m.mode == MODE_NORMAL {
 		style = boardStyleSelected
 		style.titleStyle = style.titleStyle.Foreground(b.color)
 	} else {

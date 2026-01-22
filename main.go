@@ -13,7 +13,6 @@ type Mode int
 const(
 	MODE_NORMAL Mode = iota
 	MODE_EDIT
-	MODE_TEXTEDIT
 )
 
 func main() {
@@ -59,7 +58,7 @@ func initialModel() tea.Model {
 	m.help.SetKeyContext(KEY_CONTEXT_BOARDS)
 
 	// set up editor
-	m.editor = NewEditor(&m)
+	m.editor = NewEditor()
 
 	// prepare board colors
 	b_colors := []lip.Color{
@@ -212,16 +211,20 @@ func (m *model) SetSelectedTask(task Task) {
 	m.boards[m.cursor] = board
 }
 
-func (m *model) SetModeEdit() {
+func (m *model) EnterModeEdit() {
 	m.mode = MODE_EDIT
 	m.editor.name.Focus()
 	m.editor.name.CursorEnd()
+	m.editor.mode = EDIT_MODE_NAME
+	m.help.context_data = keyContextTextEdit
 
 }
 
-func (m *model) SetModeNormal() {
+func (m *model) EnterModeNormal() {
 	m.mode = MODE_NORMAL
 	m.editor.name.Blur()
+	m.editor.desc.Blur()
+	m.help.context_data = keyContextBoards
 }
 
 func (m model) Init() tea.Cmd {
@@ -248,12 +251,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch m.mode {
 		case MODE_EDIT:
+			if m.editor.mode != EDIT_MODE_NAME {
+				break
+			}
 			switch msg.String() {
 			case "enter":
-				m.SetModeNormal()
+				m.EnterModeNormal()
 				task := m.GetSelectedTask()
 				task.name = m.editor.name.Value()
+				task.description = m.editor.desc.Value()
 				m.SetSelectedTask(task)
+			case "esc":
+				m.EnterModeNormal()
 			}
 			// edit mode mappings go here
 		case MODE_NORMAL:
@@ -271,7 +280,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "l":
 				m.IncCursor()
 			case "enter":
-				m.SetModeEdit()
+				m.EnterModeEdit()
 			}
 			// only do this stuff if selected board has tasks inside it
 			if !m.boards[m.cursor].IsEmpty() {
@@ -329,7 +338,7 @@ func (m model) View() string {
 	result = lip.JoinHorizontal(
 		lip.Top,
 		result,
-		m.editor.View(),
+		m.editor.View(m),
 	)
 	result = lip.JoinVertical(
 		lip.Left,
