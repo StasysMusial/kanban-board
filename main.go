@@ -212,6 +212,18 @@ func (m *model) SetSelectedTask(task Task) {
 	m.boards[m.cursor] = board
 }
 
+func (m *model) SetModeEdit() {
+	m.mode = MODE_EDIT
+	m.editor.name.Focus()
+	m.editor.name.CursorEnd()
+
+}
+
+func (m *model) SetModeNormal() {
+	m.mode = MODE_NORMAL
+	m.editor.name.Blur()
+}
+
 func (m model) Init() tea.Cmd {
 	return nil
 }
@@ -238,8 +250,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case MODE_EDIT:
 			switch msg.String() {
 			case "enter":
-				m.mode = MODE_NORMAL
-				m.editor.name.Blur()
+				m.SetModeNormal()
 				task := m.GetSelectedTask()
 				task.name = m.editor.name.Value()
 				m.SetSelectedTask(task)
@@ -260,9 +271,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "l":
 				m.IncCursor()
 			case "enter":
-				m.mode = MODE_EDIT
-				m.editor.name.Focus()
-				m.editor.name.CursorEnd()
+				m.SetModeEdit()
 			}
 			// only do this stuff if selected board has tasks inside it
 			if !m.boards[m.cursor].IsEmpty() {
