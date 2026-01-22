@@ -13,6 +13,7 @@ type Mode int
 const(
 	MODE_NORMAL Mode = iota
 	MODE_EDIT
+	MODE_TEXTEDIT
 )
 
 func main() {
@@ -80,7 +81,7 @@ func initialModel() tea.Model {
 	for i := range len(m.boards) {
 		tasks := []Task{}
 		for j := range 3 {
-			task := NewTask(&m, &m.boards[i], fmt.Sprintf("Task #%d", j+1))
+			task := NewTask(&m, fmt.Sprintf("Task #%d", j+1))
 			task.description = "Description"
 			task.tags = j+i
 			tasks = append(tasks, task)
@@ -93,7 +94,6 @@ func initialModel() tea.Model {
 
 func (m *model) SendTaskToEditor(task Task) {
 	m.editor = m.editor.LoadTask(task)
-	// m.Print(fmt.Sprintf("Loaded [%s] into editor", task.name), msgWarnColor)
 }
 
 func (m model) GetBoardCount() int {
@@ -109,8 +109,6 @@ func (m *model) Print(message string, color lip.Color) {
 func (m *model) IncCursor() {
 	if m.cursor < len(m.boards)-1 {
 		m.cursor++
-	// } else {
-	// 	m.cursor = 0
 	}
 	for i := range m.boards {
 		selected := (i == m.cursor)
@@ -121,8 +119,6 @@ func (m *model) IncCursor() {
 func (m *model) DecrCursor() {
 	if m.cursor > 0 {
 		m.cursor--
-	// } else {
-	// 	m.cursor = len(m.boards)-1
 	}
 	for i := range m.boards {
 		selected := (i == m.cursor)
@@ -131,7 +127,7 @@ func (m *model) DecrCursor() {
 }
 
 func (m *model) AddTask() {
-	task := NewTask(m, &m.boards[m.cursor], "New Task")
+	task := NewTask(m, "New Task")
 	m.boards[m.cursor].AddTask(task, m.boards[m.cursor].cursor+1)
 	m.boards[m.cursor].IncCursor()
 	m.boards[m.cursor].tasks[m.boards[m.cursor].cursor].tags = rand.Int() % 16
@@ -160,7 +156,6 @@ func (m *model) PasteTask(below bool) {
 		offset = 1
 	}
 	board := m.boards[m.cursor]
-	m.clipboard.bptr = &m.boards[m.cursor]
 	m.boards[m.cursor].AddTask(m.clipboard, board.cursor+offset)
 	if below {
 		m.boards[m.cursor].IncCursor()
@@ -186,7 +181,6 @@ func (m *model) MoveTaskRight() {
 	task := board.tasks[board.cursor]
 	m.boards[m.cursor].RemoveTask(board.cursor)
 
-	task.bptr = &m.boards[index]
 	m.boards[index].AddTask(task, 0)
 }
 
@@ -200,8 +194,22 @@ func (m *model) MoveTaskLeft() {
 	task := board.tasks[board.cursor]
 	m.boards[m.cursor].RemoveTask(board.cursor)
 
-	task.bptr = &m.boards[index]
 	m.boards[index].AddTask(task, 0)
+}
+
+func (m model) GetSelectedTask() Task {
+	board := m.boards[m.cursor]
+	if board.IsEmpty() {
+		return Task{}
+	}
+	task := board.tasks[board.cursor]
+	return task
+}
+
+func (m *model) SetSelectedTask(task Task) {
+	board := m.boards[m.cursor]
+	board.tasks[board.cursor] = task
+	m.boards[m.cursor] = board
 }
 
 func (m model) Init() tea.Cmd {
@@ -232,6 +240,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "enter":
 				m.mode = MODE_NORMAL
 				m.editor.name.Blur()
+				task := m.GetSelectedTask()
+				task.name = m.editor.name.Value()
+				m.SetSelectedTask(task)
 			}
 			// edit mode mappings go here
 		case MODE_NORMAL:
@@ -251,6 +262,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "enter":
 				m.mode = MODE_EDIT
 				m.editor.name.Focus()
+				m.editor.name.CursorEnd()
 			}
 			// only do this stuff if selected board has tasks inside it
 			if !m.boards[m.cursor].IsEmpty() {
@@ -285,8 +297,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	cmds = append(cmds, editorCmd)
 
 	if m.mode == MODE_NORMAL {
-		board := m.boards[m.cursor]
-		m.SendTaskToEditor(board.tasks[board.cursor])
+		m.SendTaskToEditor(m.GetSelectedTask())
 	}
 
 	// update help section

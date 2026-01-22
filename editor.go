@@ -21,7 +21,9 @@ type Editor struct {
 func NewEditor(mptr *model) Editor {
 	nameInput := textinput.New()
 	nameInput.Placeholder = ""
-	nameInput.Width = EDITOR_WIDTH-2
+	nameInput.Width = EDITOR_WIDTH-8
+	nameInput.Prompt = ""
+	nameInput.CharLimit = EDITOR_WIDTH-8
 	editor := Editor{
 		name: nameInput,
 		mptr: mptr,

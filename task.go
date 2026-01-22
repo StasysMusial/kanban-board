@@ -13,14 +13,12 @@ type Task struct {
 	tags        int
 	selected    bool
 	mptr        *model
-	bptr        *Board
 }
 
-func NewTask(mptr *model, bptr *Board, name string) Task {
+func NewTask(mptr *model, name string) Task {
 	return Task{
 		name:  name,
 		mptr:  mptr,
-		bptr:  bptr,
 	}
 }
 
