@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/charmbracelet/bubbles/textinput"
+	"fmt"
+
 	"github.com/charmbracelet/bubbles/textarea"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	lip "github.com/charmbracelet/lipgloss"
 )
@@ -22,6 +24,7 @@ type Editor struct {
 	task   Task
 	name   textinput.Model
 	desc   textarea.Model
+	tags   int
 	mode   EditMode
 }
 
@@ -46,10 +49,38 @@ func NewEditor() Editor {
 	return editor
 }
 
+func (e *Editor) ToggleTag(index int) {
+	e.SetTag(index, !e.HasTag(index))
+}
+
+func (e Editor) HasTag(index int) bool {
+	return (e.tags & (1 << index)) > 0
+}
+
+func (e *Editor) SetTag(index int, state bool) {
+	if state {
+		e.tags |= (1 << index)
+	} else {
+		e.tags &= ^(1 << index)
+	}
+}
+
+func (e Editor) ViewTags() string {
+	tags := []string{}
+	for i, tag := range allTags {
+		if !e.HasTag(i) {
+			tag.color = lip.Color("#404040")
+		}
+		tags = append([]string{fmt.Sprintf(" %s", tag.View())}, tags...)
+	}
+	return lip.JoinHorizontal(lip.Top, tags...)
+}
+
 func (e Editor) LoadTask(task Task) Editor {
 	e.task = task
 	e.name.SetValue(task.name)
 	e.desc.SetValue(task.description)
+	e.tags = task.tags
 	return e
 }
 
@@ -60,6 +91,9 @@ func (e Editor) Init() tea.Cmd {
 func (e Editor) Update(msg tea.Msg, m model) (Editor, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		e.height = msg.Height-2
+		e.desc.SetHeight(msg.Height-12)
 	case tea.KeyMsg:
 		if m.mode != MODE_EDIT {
 			break
@@ -76,6 +110,17 @@ func (e Editor) Update(msg tea.Msg, m model) (Editor, tea.Cmd) {
 				e.mode = EDIT_MODE_NAME
 				e.desc.Blur()
 				e.name.Focus()
+			}
+		}
+
+		if e.mode == EDIT_MODE_NAME {
+			nTags := len(allTags)
+			for i := range nTags {
+				key := fmt.Sprintf("f%d", nTags-i)
+				if msg.String() != key {
+					continue
+				}
+				e.ToggleTag(i)
 			}
 		}
 
@@ -102,11 +147,13 @@ func (e Editor) View(m model) string {
 			style = editorStyleDesc
 		}
 	}
+	nameLabel := style.nameLabelStyle.Render(" Task ")
 	name := e.name.View()
 	desc := e.desc.View()
+	tags := e.ViewTags()
 	result := lip.JoinVertical(
 		lip.Left,
-		style.nameLabelStyle.Render(" Task "),
+		lip.JoinHorizontal(lip.Top, nameLabel, tags),
 		"",
 		name,
 		"",

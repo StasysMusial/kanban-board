@@ -192,7 +192,7 @@ func (b Board) View(m model) string {
 		if i < b.scroll {
 			continue
 		}
-		tasks = append(tasks, task.View(m, b))
+		tasks = append(tasks, task.View(m, b, i))
 	}
 
 	upScroller   := ""

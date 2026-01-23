@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -10,7 +9,7 @@ import (
 )
 
 type Mode int
-const(
+const (
 	MODE_NORMAL Mode = iota
 	MODE_EDIT
 )
@@ -30,7 +29,6 @@ type model struct {
 
 	mode      Mode
 	cursor    int
-	tags      []Tag
 	boards    []Board
 	editor    Editor
 	help      Help
@@ -42,12 +40,6 @@ type model struct {
 
 func initialModel() tea.Model {
 	var m model = model{
-		tags: []Tag{
-			NewTag("󰃣", lip.Color("#f5d33d")),
-			NewTag("", lip.Color("#5c84d6")),
-			NewTag("󰅩", lip.Color("#89d789")),
-			NewTag("󰫢", lip.Color("#ff4cc4")),
-		},
 		mode: MODE_NORMAL,
 		help: Help{},
 		cursor: 0,
@@ -56,6 +48,11 @@ func initialModel() tea.Model {
 
 	InitKeyContexts()
 	m.help.SetKeyContext(KEY_CONTEXT_BOARDS)
+
+	NewTag("󰫢", lip.Color("#ff4cc4"))
+	NewTag("󰅩", lip.Color("#89d789"))
+	NewTag("", lip.Color("#5c84d6"))
+	NewTag("󰃣", lip.Color("#f5d33d"))
 
 	// set up editor
 	m.editor = NewEditor()
@@ -117,7 +114,6 @@ func (m *model) AddTask() {
 	task := NewTask(m, "")
 	m.boards[m.cursor].AddTask(task, m.boards[m.cursor].cursor+1)
 	m.boards[m.cursor].IncCursor()
-	m.boards[m.cursor].tasks[m.boards[m.cursor].cursor].tags = rand.Int() % 16
 	m.Print(fmt.Sprintf("Added task to [%s]", m.boards[m.cursor].title), msgInfoColor)
 }
 
@@ -247,6 +243,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				task := m.GetSelectedTask()
 				task.name = m.editor.name.Value()
 				task.description = m.editor.desc.Value()
+				task.tags = m.editor.tags
 				m.SetSelectedTask(task)
 			case "esc":
 				m.EnterModeNormal()
@@ -267,8 +264,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.DecrCursor()
 			case "l":
 				m.IncCursor()
-			case "enter":
-				m.EnterModeEdit()
 			}
 			// only do this stuff if selected board has tasks inside it
 			if !m.boards[m.cursor].IsEmpty() {
@@ -284,6 +279,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.RemoveTask()
 				case "y":
 					m.CopyTask()
+				case "enter":
+					m.EnterModeEdit()
 				}
 			}
 		}

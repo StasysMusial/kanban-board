@@ -36,9 +36,9 @@ const (
 type TaskAction int
 const (
 	TASK_ACTION_SWITCH_FIELD TaskAction = iota
-	TASK_ACTION_TOGGLE_TAG
 	TASK_ACTION_SUBMIT
 	TASK_ACTION_CANCEL
+	TASK_ACTION_TOGGLE_TAG
 	TASK_ACTIONS
 )
 
@@ -133,7 +133,7 @@ func InitKeyContexts() {
 	keyContextTask.keys[TASK_ACTION_SWITCH_FIELD]    = "tab"
 	keyContextTask.actions[TASK_ACTION_SWITCH_FIELD] = "switch field"
 
-	keyContextTask.keys[TASK_ACTION_TOGGLE_TAG]      = "ctrl+[NUM]"
+	keyContextTask.keys[TASK_ACTION_TOGGLE_TAG]      = "f1, f2, f3..."
 	keyContextTask.actions[TASK_ACTION_TOGGLE_TAG]   = "toggle tag"
 
 	keyContextTask.keys[TASK_ACTION_CANCEL]          = "esc"

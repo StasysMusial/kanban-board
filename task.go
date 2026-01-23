@@ -36,7 +36,7 @@ func (t Task) HasTag(index int) bool {
 
 func (t Task) GetTags(m model) []Tag {
 	tags := []Tag{}
-	for i, tag := range m.tags {
+	for i, tag := range allTags {
 		if t.HasTag(i) {
 			tags = append(tags, tag)
 		}
@@ -53,7 +53,7 @@ func (t Task) Update(msg tea.Msg) (Task, tea.Cmd) {
 	return t, cmd
 }
 
-func (t Task) View(m model, b Board) string {
+func (t Task) View(m model, b Board, index int) string {
 	// select style
 	var style TaskStyle
 	if t.selected && b.selected {
@@ -65,15 +65,13 @@ func (t Task) View(m model, b Board) string {
 	}
 
 	// get base strings
-	str_name := t.name
-	str_desc := t.description
-	if len(str_desc) == 0 {
-		str_desc = "..."
+	// strName := fmt.Sprintf("%d %s", index+1, t.name)
+	strName := t.name
+	strDesc := t.description
+	if len(strDesc) == 0 {
+		strDesc = "..."
 	}
 
-	// render stylization
-	name := style.nameStyle.Render(str_name)
-	desc := style.descriptionStyle.Render(str_desc)
 
 	// render tags
 	tags := ""
@@ -84,31 +82,48 @@ func (t Task) View(m model, b Board) string {
 		if !b.selected {
 			tag.color = lip.Color("#646464")
 		}
-		tags += fmt.Sprintf(" %s", tag.View())
+		tags += fmt.Sprintf("%s ", tag.View())
 	}
 
 	// create spacing between name and tags (unused for now)
-	tags_width := lip.Width(tags)
-	name_width := lip.Width(name)
-	name_tag_distance := (b.width-4) - (tags_width+name_width)
-	name_tag_spacing := ""
-	for range name_tag_distance {
-		name_tag_spacing += " "
+	tagsWidth := lip.Width(tags)
+	descWidth := lip.Width(strDesc)
+	nameWidth := lip.Width(strName)
+	nameTrim := (b.width-4) - nameWidth
+	descTagDistance := (b.width-4) - (tagsWidth+descWidth)
+	if descTagDistance < 0 {
+		trim := descTagDistance * -1
+		trim += 3
+		sliceBound := descWidth-trim
+		if sliceBound >= 0 {
+			strDesc = strDesc[:sliceBound]+"..."
+		}
+	}
+	if nameTrim < 0 {
+		trim := nameTrim * -1
+		trim += 3
+		sliceBound := nameWidth-trim
+		if sliceBound >= 0 {
+			strName = strName[:sliceBound]+"..."
+		}
 	}
 
+	// render stylization
+	desc := style.descriptionStyle.Render(strDesc)
+	name := style.nameStyle.Render(strName)
+
 	// assemble name and tags
-	title := lip.JoinHorizontal(
+	desc = lip.JoinHorizontal(
 		lip.Top,
-		name,
-		// name_tag_spacing,
 		tags,
+		desc,
 	)
 
 	// put together full task
 	// put together full task
 	str_container := lip.JoinVertical(
 		lip.Left,
-		title,
+		name,
 		desc,
 	)
 
