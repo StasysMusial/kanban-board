@@ -62,7 +62,7 @@ func (h Help) View(m model, maxWidth int) string {
 	mode = modeStyle.Render(fmt.Sprintf(" %s ", mode))
 
 	result := lip.JoinHorizontal(lip.Top, mappings...)
-	result = lip.JoinHorizontal(lip.Top, mode, result)
+	result = lip.JoinHorizontal(lip.Top, m.ViewTitle(), mode, result)
 	result = helpStyle.containerStyle.
 		MaxWidth(maxWidth).
 		// AlignHorizontal(lip.Center).

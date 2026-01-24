@@ -13,6 +13,7 @@ type Board struct {
 	height      int
 
 	title       string
+	icon        string
 	color       lip.Color
 
 	selected    bool
@@ -23,9 +24,10 @@ type Board struct {
 	shown_tasks int
 }
 
-func NewBoard(title string, color lip.Color) Board {
+func NewBoard(title string, icon string, color lip.Color) Board {
 	return Board{
 		title:    title,
+		icon:     icon,
 		color:    color,
 
 		selected: false,
@@ -41,9 +43,6 @@ func (b *Board) IncCursor() {
 		if b.cursor >= b.shown_tasks + b.scroll {
 			b.scroll++
 		}
-	// } else {
-	// 	b.cursor = 0
-	// 	b.scroll = 0
 	}
 }
 
@@ -53,9 +52,6 @@ func (b *Board) DecrCursor() {
 		if b.cursor < b.scroll {
 			b.scroll--
 		}
-	// } else {
-	// 	b.cursor = len(b.tasks)-1
-	// 	b.scroll = b.cursor - (b.shown_tasks-1)
 	}
 }
 
@@ -209,7 +205,7 @@ func (b Board) View(m model) string {
 	var style BoardStyle
 	if b.selected && m.mode == MODE_NORMAL {
 		style = boardStyleSelected
-		style.titleStyle = style.titleStyle.Foreground(b.color)
+		// style.titleStyle = style.titleStyle
 	} else {
 		style = boardStyle
 	}
@@ -232,18 +228,31 @@ func (b Board) View(m model) string {
 		style.scrollerStyle.Width(b.width-4).AlignHorizontal(lip.Center).Render(downScroller),
 	)
 
-	title := style.titleStyle.
+	icon := lip.NewStyle().Foreground(b.color).MaxHeight(1).Render(b.icon)
+	counter := fmt.Sprintf("[%d]", len(b.tasks))
+	counter = style.counterStyle.MaxHeight(1).Render(counter)
+	title := style.titleStyle.MaxHeight(1).Render(b.title)
+
+	header := lip.JoinHorizontal(lip.Top,
+		icon,
+		" ",
+		title,
+		" ",
+		counter,
+	)
+	header = lip.NewStyle().
 		Width(b.width).
 		MaxWidth(b.width).
 		Height(1).
 		MaxHeight(1).
 		AlignHorizontal(lip.Center).
-		Render(fmt.Sprintf(" %s [%d]", b.title, len(b.tasks)))
+		Render(header)
+
 	result = style.containerStyle.Render(result)
 
 	result = lip.JoinVertical(
 		lip.Left,
-		title,
+		header,
 		result,
 	)
 

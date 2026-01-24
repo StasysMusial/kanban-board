@@ -10,7 +10,9 @@ import (
 func main() {
 	InitIO()
 	GenerateDefaultConfig()
-
+	if !GenerateProjectConfig() {
+		return
+	}
 	// set up main model
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
@@ -18,4 +20,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-

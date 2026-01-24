@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	lip "github.com/charmbracelet/lipgloss"
@@ -27,6 +28,8 @@ type model struct {
 
 	clipboard Task
 	message   string
+	title     string
+	color     lip.Color
 	can_paste bool
 }
 
@@ -48,8 +51,11 @@ func initialModel() tea.Model {
 
 	// TODO: this needs to be using the
 	// per project config instead of the default config
-	conf := GetConfig(GetDefaultConfigPath())
+	conf := GetConfig(GetCwdConfigPath())
 	m.LoadConfig(conf)
+
+	data := ReadData()
+	m.LoadState(data)
 
 	return m
 }
@@ -59,8 +65,34 @@ func (m *model) LoadConfig(c config) {
 		NewTag(t.Icon, lip.Color(t.Color))
 	}
 	for _, b := range c.Boards {
-		board := NewBoard(b.Name, lip.Color(b.Color))
+		board := NewBoard(b.Name, b.Icon, lip.Color(b.Color))
 		m.boards = append(m.boards, board)
+	}
+	title := c.Title
+	if title == "DEFAULT" {
+		cwdParts := strings.Split(cwd, pathSeparator)
+		title = cwdParts[len(cwdParts)-1]
+	}
+	m.title = title
+	color := c.Color
+	if color == "DEFAULT" {
+		color = "7"
+	}
+	m.color = lip.Color(color)
+}
+
+func (m *model) LoadState(d modelSaveData) {
+	for i, bData := range d.Boards {
+		for _, t := range bData.Tasks {
+			task := Task{
+				name: t.Name,
+				description: t.Desc,
+				tags: t.Tags,
+			}
+			if i < len(m.boards) {
+				m.boards[i].tasks = append(m.boards[i].tasks, task)
+			}
+		}
 	}
 }
 
@@ -149,7 +181,6 @@ func (m *model) PasteTaskAbove() {
 func (m *model) MoveTaskRight() {
 	index := m.cursor+1
 	if index >= len(m.boards) {
-		// index = 0
 		return
 	}
 	board := m.boards[m.cursor]
@@ -157,12 +188,12 @@ func (m *model) MoveTaskRight() {
 	m.boards[m.cursor].RemoveTask(board.cursor)
 
 	m.boards[index].AddTask(task, 0)
+	m.Print(fmt.Sprintf("Moved [%s] to [%s]", task.name, m.boards[index].title), msgColorInfo)
 }
 
 func (m *model) MoveTaskLeft() {
 	index := m.cursor-1
 	if index < 0 {
-		// index = len(m.boards)-1
 		return
 	}
 	board := m.boards[m.cursor]
@@ -170,6 +201,7 @@ func (m *model) MoveTaskLeft() {
 	m.boards[m.cursor].RemoveTask(board.cursor)
 
 	m.boards[index].AddTask(task, 0)
+	m.Print(fmt.Sprintf("Moved [%s] to [%s]", task.name, m.boards[index].title), msgColorInfo)
 }
 
 func (m model) GetSelectedTask() Task {
@@ -202,6 +234,17 @@ func (m *model) EnterModeNormal() {
 	m.editor.name.Blur()
 	m.editor.desc.Blur()
 	m.help.context_data = keyContextBoards
+}
+
+func (m model) ViewTitle() string {
+	return projectTitleStyle.
+		MaxHeight(1).
+		Background(m.color).
+		Render(fmt.Sprintf(" %s ", m.title))
+}
+
+func (m model) ViewMessage(width int) string {
+	return lip.NewStyle().MaxWidth(width).Render(m.message)
 }
 
 func (m model) Init() tea.Cmd {
@@ -243,7 +286,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.EnterModeNormal()
 				task := m.GetSelectedTask()
 				task.name = m.editor.name.Value()
+				task.name = strings.TrimSpace(task.name)
 				task.description = m.editor.desc.Value()
+				task.description = strings.TrimSpace(task.description)
 				task.tags = m.editor.tags
 				m.SetSelectedTask(task)
 			case "esc":
@@ -253,7 +298,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case MODE_NORMAL:
 			switch msg.String() {
 			case "q":
+				data := ModelToJSON(m)
+				WriteData(data)
 				return m, tea.Quit
+			case "esc":
+				m.message = ""
 			}
 
 			if !m.HasBoards() {
@@ -309,6 +358,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	if m.mode == MODE_NORMAL {
 		m.SendTaskToEditor(m.GetSelectedTask())
+	} else {
+		task := m.GetSelectedTask()
+		task.name = m.editor.name.Value()
+		task.description = m.editor.desc.Value()
+		task.tags = m.editor.tags
+		m.SetSelectedTask(task)
 	}
 
 	if deferredEdit {
@@ -355,7 +410,7 @@ func (m model) View() string {
 	result = lip.JoinVertical(
 		lip.Left,
 		result,
-		m.message,
+		m.ViewMessage(lip.Width(result)),
 		m.help.View(m, lip.Width(result)),
 	)
 	result = lip.JoinHorizontal(

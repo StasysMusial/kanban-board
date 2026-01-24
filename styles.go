@@ -13,6 +13,7 @@ type TaskStyle struct {
 type BoardStyle struct {
 	containerStyle lip.Style
 	titleStyle     lip.Style
+	counterStyle   lip.Style
 	scrollerStyle  lip.Style
 }
 
@@ -46,6 +47,8 @@ var editorStyle         EditorStyle
 var editorStyleName     EditorStyle
 var editorStyleDesc     EditorStyle
 
+var projectTitleStyle   lip.Style
+
 var msgColorInfo  lip.Color
 var msgColorWarn  lip.Color
 var msgColorError lip.Color
@@ -55,13 +58,14 @@ var modeColorTask  lip.Color
 var modeColorDesc  lip.Color
 
 func InitStyles() {
-	msgColorInfo  = lip.Color("#678899")
+	// msgColorInfo  = lip.Color("#678899")
+	msgColorInfo  = lip.Color("#808080")
 	msgColorWarn  = lip.Color("#999967")
 	msgColorError = lip.Color("#996777")
 
 	modeColorBoard = lip.Color("#808080")
-	modeColorTask  = lip.Color("#69bf7a")
-	modeColorDesc  = lip.Color("#cdba65")
+	modeColorTask  = lip.Color("#5d4cff")
+	modeColorDesc  = lip.Color("#ffcb4c")
 
 	taskStyle = TaskStyle{
 		containerStyle: lip.NewStyle().
@@ -109,6 +113,7 @@ func InitStyles() {
 			Border(lip.RoundedBorder()).
 			BorderForeground(lip.Color("#2d2d2d")),
 		titleStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
+		counterStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 	}
 	boardStyleSelected = BoardStyle{
@@ -117,6 +122,7 @@ func InitStyles() {
 			Border(lip.RoundedBorder()).
 			BorderForeground(lip.Color("#646464")),
 		titleStyle: lip.NewStyle().Bold(true),
+		counterStyle: lip.NewStyle().Foreground(lip.Color("#646464")),
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
 	}
 	helpStyle = HelpStyle{
@@ -179,4 +185,7 @@ func InitStyles() {
 		descFieldStyle: lip.NewStyle().
 			Foreground(lip.Color("7")),
 	}
+	projectTitleStyle = lip.NewStyle().
+		Bold(true).
+		Foreground(lip.Color("#1c1c1c"))
 }
