@@ -160,7 +160,7 @@ func (e Editor) View(m model) string {
 		"",
 		desc,
 	)
-	result = editorStyle.containerStyle.MaxWidth(EDITOR_WIDTH-2).Render(result)
+	result = editorStyle.containerStyle.MaxWidth(EDITOR_WIDTH-3).Render(result)
 	result = lip.JoinVertical(
 		lip.Right,
 		result,
