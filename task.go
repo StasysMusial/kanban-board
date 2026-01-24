@@ -22,6 +22,19 @@ func NewTask(mptr *model, name string) Task {
 	}
 }
 
+func (t Task) IsEmpty() bool {
+	if t.tags > 0 {
+		return false
+	}
+	if t.name != "" {
+		return false
+	}
+	if t.description != "" {
+		return false
+	}
+	return true
+}
+
 func (t *Task) SetTag(index int, state bool) {
 	if state {
 		t.tags |= (1 << index)

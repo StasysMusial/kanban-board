@@ -151,6 +151,11 @@ func (m *model) CopyTask() {
 func (m *model) RemoveTask() {
 	board := m.boards[m.cursor]
 	m.boards[m.cursor].RemoveTask(board.cursor)
+}
+
+func (m *model) CutTask() {
+	m.CopyTask()
+	m.RemoveTask()
 	m.Print(fmt.Sprintf("Cut [%s]", m.clipboard.name), msgColorInfo)
 }
 
@@ -293,6 +298,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.SetSelectedTask(task)
 			case "esc":
 				m.EnterModeNormal()
+				if m.editor.task.IsEmpty() {
+					m.RemoveTask()
+					m.message = ""
+				} else {
+					m.SetSelectedTask(m.editor.task)
+				}
 			}
 			// edit mode mappings go here
 		case MODE_NORMAL:
@@ -332,8 +343,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.MoveTaskRight()
 					m.IncCursor()
 				case "x":
-					m.CopyTask()
-					m.RemoveTask()
+					m.CutTask()
 				case "y":
 					m.CopyTask()
 				case "enter":

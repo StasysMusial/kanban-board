@@ -48,6 +48,7 @@ var editorStyleName     EditorStyle
 var editorStyleDesc     EditorStyle
 
 var projectTitleStyle   lip.Style
+var versionStyle        lip.Style
 
 var msgColorInfo  lip.Color
 var msgColorWarn  lip.Color
@@ -188,4 +189,6 @@ func InitStyles() {
 	projectTitleStyle = lip.NewStyle().
 		Bold(true).
 		Foreground(lip.Color("#1c1c1c"))
+	versionStyle = lip.NewStyle().
+		Foreground(lip.Color("#808080"))
 }

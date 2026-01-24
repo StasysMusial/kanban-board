@@ -123,13 +123,21 @@ func (b *Board) SetHeight(height int) {
 	b.shown_tasks = height / 3
 }
 
-func (b *Board) SortByTags() {
+func (b *Board) SortByTags(descending bool) {
 	tasks := b.tasks
-	sort.Slice(tasks, func(i, j int) bool {
-		t1 := tasks[i]
-		t2 := tasks[j]
-		return t1.tags > t2.tags
-	})
+	if descending {
+		sort.Slice(tasks, func(i, j int) bool {
+			t1 := tasks[i]
+			t2 := tasks[j]
+			return t1.tags > t2.tags
+		})
+	} else {
+		sort.Slice(tasks, func(i, j int) bool {
+			t1 := tasks[i]
+			t2 := tasks[j]
+			return t1.tags < t2.tags
+		})
+	}
 	b.tasks = tasks
 }
 
@@ -164,7 +172,9 @@ func (b Board) Update(msg tea.Msg, m model) (Board, tea.Cmd) {
 				b.scroll = b.cursor - b.shown_tasks
 				b.scroll += 1
 			case "s":
-				b.SortByTags()
+				b.SortByTags(true)
+			case "S":
+				b.SortByTags(false)
 			}
 		}
 	}

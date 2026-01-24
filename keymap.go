@@ -1,5 +1,3 @@
-// this is purely visual and is only needed for the
-// help section at the bottom of the screen
 package main
 
 // context data struct declaration
@@ -23,12 +21,12 @@ const (
 	BOARD_ACTION_SELECT BoardAction = iota
 	BOARD_ACTION_MOVE_TASK
 	BOARD_ACTION_GOTO
+	BOARD_ACTION_SORT
 	BOARD_ACTION_EDIT_TASK
 	BOARD_ACTION_ADD_TASK
 	BOARD_ACTION_DELETE_TASK
 	BOARD_ACTION_COPY_TASK
 	BOARD_ACTION_PASTE_TASK
-	BOARD_ACTION_SORT
 	BOARD_ACTION_QUIT
 	BOARD_ACTIONS
 )
@@ -67,6 +65,8 @@ var taskDescActionKeys  []string
 var keyContexts map[KeyContext]KeyContextData
 
 // initialize key contexts
+// this is purely visual and is only needed for the
+// help section at the bottom of the screen
 func InitKeyContexts() {
 	keyContexts = make(map[KeyContext]KeyContextData)
 
@@ -126,7 +126,7 @@ func InitKeyContexts() {
 	keyContextBoards.keys[BOARD_ACTION_PASTE_TASK]      = "p"
 	keyContextBoards.actions[BOARD_ACTION_PASTE_TASK]   = "paste"
 
-	keyContextBoards.keys[BOARD_ACTION_SORT]            = "s"
+	keyContextBoards.keys[BOARD_ACTION_SORT]            = "s/S"
 	keyContextBoards.actions[BOARD_ACTION_SORT]         = "sort"
 
 	// setup task key and action labels

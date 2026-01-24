@@ -161,13 +161,13 @@ func (e Editor) View(m model) string {
 		desc,
 	)
 	result = editorStyle.containerStyle.MaxWidth(EDITOR_WIDTH-2).Render(result)
-	// result = lip.JoinVertical(
-	// 	lip.Right,
-	// 	result,
-	// 	projectTitleStyle.
-	// 		MaxWidth(EDITOR_WIDTH).
-	// 		MaxHeight(1).
-	// 		Render(fmt.Sprintf(" %s ", m.title)),
-	// )
+	result = lip.JoinVertical(
+		lip.Right,
+		result,
+		versionStyle.
+			MaxWidth(EDITOR_WIDTH).
+			MaxHeight(1).
+			Render(fmt.Sprintf("v%s", appVersion.ToString())),
+	)
 	return result
 }
