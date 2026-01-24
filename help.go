@@ -8,7 +8,6 @@ import (
 )
 
 type Help struct {
-	width        int
 	context_data KeyContextData
 }
 
@@ -21,14 +20,10 @@ func (h Help) Init() tea.Cmd {
 }
 
 func (h Help) Update(msg tea.Msg) (Help, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		h.width = msg.Width
-	}
 	return h, nil
 }
 
-func (h Help) View() string {
+func (h Help) View(m model, maxWidth int) string {
 	mappings := []string{}
 	for i := range len(h.context_data.actions) {
 		action := h.context_data.actions[i]
@@ -36,13 +31,40 @@ func (h Help) View() string {
 		// action = helpStyle.actionStyle.Render(fmt.Sprintf("∙ %s", action))
 		action = helpStyle.actionStyle.Render(action)
 		key = helpStyle.keyStyle.Render(key)
-		mapping := fmt.Sprintf(" %s %s  ", key, action)
+		mapping := fmt.Sprintf("  %s %s", key, action)
 		mappings = append(mappings, mapping)
 	}
 
+	mode := ""
+	var modeColor lip.Color
+	modelMode := m.mode
+	editMode := m.editor.mode
+
+	switch modelMode {
+	case MODE_NORMAL:
+		mode = "BOARD"
+		modeColor = modeColorBoard
+	case MODE_EDIT:
+		switch editMode {
+		case EDIT_MODE_NAME:
+			mode = "TASK"
+			modeColor = modeColorTask
+		case EDIT_MODE_DESC:
+			mode = "DESC"
+			modeColor = modeColorDesc
+		}
+	}
+
+	modeStyle := lip.NewStyle().
+		Bold(true).
+		Foreground(lip.Color("#1c1c1c")).
+		Background(modeColor)
+	mode = modeStyle.Render(fmt.Sprintf(" %s ", mode))
+
 	result := lip.JoinHorizontal(lip.Top, mappings...)
+	result = lip.JoinHorizontal(lip.Top, mode, result)
 	result = helpStyle.containerStyle.
-		Width(h.width).
+		MaxWidth(maxWidth).
 		// AlignHorizontal(lip.Center).
 		Render(result)
 

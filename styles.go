@@ -46,14 +46,22 @@ var editorStyle         EditorStyle
 var editorStyleName     EditorStyle
 var editorStyleDesc     EditorStyle
 
-var msgInfoColor  lip.Color
-var msgWarnColor  lip.Color
-var msgErrorColor lip.Color
+var msgColorInfo  lip.Color
+var msgColorWarn  lip.Color
+var msgColorError lip.Color
+
+var modeColorBoard lip.Color
+var modeColorTask  lip.Color
+var modeColorDesc  lip.Color
 
 func InitStyles() {
-	msgInfoColor = lip.Color("#678899")
-	msgWarnColor = lip.Color("#999967")
-	msgErrorColor = lip.Color("#996777")
+	msgColorInfo  = lip.Color("#678899")
+	msgColorWarn  = lip.Color("#999967")
+	msgColorError = lip.Color("#996777")
+
+	modeColorBoard = lip.Color("#808080")
+	modeColorTask  = lip.Color("#69bf7a")
+	modeColorDesc  = lip.Color("#cdba65")
 
 	taskStyle = TaskStyle{
 		containerStyle: lip.NewStyle().
@@ -121,9 +129,10 @@ func InitStyles() {
 		actionStyle: lip.NewStyle().
 			Foreground(lip.Color("#404040")),
 	}
+	editorContainerStyle := lip.NewStyle().
+		Padding(1, 0, 0, 2)
 	editorStyle = EditorStyle{
-		containerStyle: lip.NewStyle().
-			Padding(2, 4, 2),
+		containerStyle: editorContainerStyle,
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 		nameLabelStyle: lip.NewStyle().
 			Bold(true).
@@ -139,8 +148,7 @@ func InitStyles() {
 			Foreground(lip.Color("7")),
 	}
 	editorStyleName = EditorStyle{
-		containerStyle: lip.NewStyle().
-			Padding(2, 4, 2),
+		containerStyle: editorContainerStyle,
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
 		nameLabelStyle: lip.NewStyle().
 			Bold(true).
@@ -156,8 +164,7 @@ func InitStyles() {
 			Foreground(lip.Color("7")),
 	}
 	editorStyleDesc = EditorStyle{
-		containerStyle: lip.NewStyle().
-			Padding(2, 4, 2),
+		containerStyle: editorContainerStyle,
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#808080")),
 		nameLabelStyle: lip.NewStyle().
 			Bold(true).

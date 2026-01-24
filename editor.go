@@ -31,15 +31,14 @@ type Editor struct {
 func NewEditor() Editor {
 	nameInput := textinput.New()
 	nameInput.Placeholder = ""
-	nameInput.Width = EDITOR_WIDTH-8
+	nameInput.Width = EDITOR_WIDTH-7
 	nameInput.Prompt = ""
-	nameInput.CharLimit = EDITOR_WIDTH-8
+	nameInput.CharLimit = EDITOR_WIDTH-7
 
 	descInput := textarea.New()
 	descInput.Prompt = ""
-	descInput.SetWidth(EDITOR_WIDTH-4)
+	descInput.SetWidth(EDITOR_WIDTH-3)
 	descInput.Placeholder = ""
-	descInput.SetHeight(10)
 	descInput.ShowLineNumbers = false
 	editor := Editor{
 		name: nameInput,
@@ -92,8 +91,8 @@ func (e Editor) Update(msg tea.Msg, m model) (Editor, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		e.height = msg.Height-2
-		e.desc.SetHeight(msg.Height-12)
+		e.height = msg.Height
+		e.desc.SetHeight(msg.Height-8)
 	case tea.KeyMsg:
 		if m.mode != MODE_EDIT {
 			break
@@ -161,6 +160,6 @@ func (e Editor) View(m model) string {
 		"",
 		desc,
 	)
-	result = editorStyle.containerStyle.Render(result)
+	result = editorStyle.containerStyle.MaxWidth(EDITOR_WIDTH-2).Render(result)
 	return result
 }

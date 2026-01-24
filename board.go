@@ -234,8 +234,11 @@ func (b Board) View(m model) string {
 
 	title := style.titleStyle.
 		Width(b.width).
+		MaxWidth(b.width).
+		Height(1).
+		MaxHeight(1).
 		AlignHorizontal(lip.Center).
-		Render(fmt.Sprintf("-- %s --", b.title))
+		Render(fmt.Sprintf(" %s [%d]", b.title, len(b.tasks)))
 	result = style.containerStyle.Render(result)
 
 	result = lip.JoinVertical(
