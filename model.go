@@ -55,7 +55,6 @@ func initialModel() tea.Model {
 }
 
 func (m *model) LoadConfig(c config) {
-	fmt.Println(c)
 	for _, t := range c.Tags {
 		NewTag(t.Icon, lip.Color(t.Color))
 	}
