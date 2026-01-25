@@ -67,7 +67,7 @@ brew tap stasysmusial/formulae
 brew install kanban-board
 ```
 
-You can check if the installation succeeded by running:
+If there were no errors you should now be able to run:
 
 
 ```bash
