@@ -52,7 +52,7 @@ All configurable colors support ANSI 16 (4-bit), ANSI 256 (8-bit) and True Color
 </details>
 
 ## Installation
-Using `scoop` on Windows:
+Using `scoop` on Windows, or by downloading a precompiled binary from the [releases page][releases] and adding it to your `PATH` manually:
 
 ```bash
 scoop bucket add stasysmusial https://github.com/StasysMusial/scoop-bucket
