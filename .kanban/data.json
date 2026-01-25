@@ -3,13 +3,18 @@
 		{
 			"Tasks": [
 				{
-					"Name": "edit desc in text editor",
-					"Desc": "press ctrl-e to open the description in a text editor (like nvim or notepad)\n\nwill need a config adjustment to configure editor since thats not a thing on windows i dont think",
+					"Name": "release automation",
+					"Desc": "figure out if there is some kind of easy way of automating the release including generating the formula for homebrew and generating the manifest for scoop",
 					"Tags": 4
 				},
 				{
 					"Name": "automatic versioning",
 					"Desc": "so that i dont have to create a version number manually ever again",
+					"Tags": 4
+				},
+				{
+					"Name": "edit desc in text editor",
+					"Desc": "press ctrl-e to open the description in a text editor (like nvim or notepad)\n\nwill need a config adjustment to configure editor since thats not a thing on windows i dont think",
 					"Tags": 4
 				},
 				{
@@ -21,17 +26,21 @@
 					"Name": "support for themes",
 					"Desc": "would be really cool to have\n\nnot suuuuper necessary, let's see",
 					"Tags": 4
+				},
+				{
+					"Name": "more config options",
+					"Desc": "- editor width",
+					"Tags": 4
+				},
+				{
+					"Name": "deadlines",
+					"Desc": "deadlines for tasks that will display time left and will change the color of the task when the deadline is close/has been crossed",
+					"Tags": 4
 				}
 			]
 		},
 		{
-			"Tasks": [
-				{
-					"Name": "release automation",
-					"Desc": "figure out if there is some kind of easy way of automating the release including generating the formula for homebrew and generating the manifest for scoop",
-					"Tags": 4
-				}
-			]
+			"Tasks": null
 		},
 		{
 			"Tasks": null
