@@ -1,6 +1,13 @@
 # Minimal Kanban TUI
 A simple and somewhat configurable TUI for managing tasks built using the [Bubbletea][tea] and [Lip Gloss][lip] framework.
 
+**Requirements:**
+- [Nerd Font][nerdfont] to display icons
+- [Go programming language][goinstall] for building from source (optional on Windows)
+
+**Known Issues:**
+- currently not working on MacOS until I get a homebrew tap and formulae set up
+
 ## Demo
 ![demo_gif](https://github.com/StasysMusial/kanban-board/blob/main/demo/demo.gif?raw=true)
 
@@ -70,12 +77,6 @@ Then navigate into the directory:
 
 ```bash
 cd kanban-board
-```
-
-Fetch the necessary Go packages:
-
-```bash
-go mod tidy
 ```
 
 Build the application using the following command:
@@ -176,3 +177,4 @@ This project is functional but lacks some features which might make or break via
 [lipcolors]: https://github.com/charmbracelet/lipgloss#colors
 [releases]: https://github.com/StasysMusial/kanban-board/releases
 [goinstall]: https://go.dev/doc/install
+[nerdfont]: https://www.nerdfonts.com/font-downloads
