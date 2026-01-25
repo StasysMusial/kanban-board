@@ -49,12 +49,18 @@ All configurable colors support ANSI 16 (4-bit), ANSI 256 (8-bit) and True Color
 </details>
 
 ## Installation
-You can install kanban-board by downloading a prebuilt binary from the [releases page][releases]. Prebuilt binaries are available for Windows and MacOS.
+If you're on Windows you can install kanban-board by downloading a prebuilt binary from the [releases page][releases] and adding it to your `PATH`.
+
+You should now be able to run the following command in any directory to start kanban-board and initialize a board:
+
+```bash
+kanban-board
+```
 
 ## Building From Source
 Building from sources requires [the Go programming language][goinstall].
 
-If you're on Linux or would like to build kanban-board yourself start by cloning the repo:
+If you're not on Windows or would like to build kanban-board yourself start by cloning the repo:
 
 ```bash
 git clone https://github.com/StasysMusial/kanban-board
@@ -79,12 +85,6 @@ go build -o "build/" .
 ```
 
 If the build succeeded you will find the executable in `kanban-board/builds`. Then add the executable to your `PATH`.
-
-You should now be able to run the following command in any directory to start kanban-board and initialize a board:
-
-```bash
-kanban-board
-```
 
 ## Configuration
 Boards can be configured using a TOML file with the following keys:
