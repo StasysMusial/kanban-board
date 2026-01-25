@@ -42,6 +42,14 @@ func InitVersion() {
 }
 
 func main() {
+	if len(os.Args) == 2 {
+		switch os.Args[1] {
+		case "-v", "--version":
+			fmt.Println(fmt.Sprintf("kanban-board v%s", CURRENT_VERSION))
+			return
+		}
+	}
+
 	InitVersion()
 	InitIO()
 	GenerateDefaultConfig()
