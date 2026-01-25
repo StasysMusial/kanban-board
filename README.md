@@ -5,9 +5,6 @@ A simple and somewhat configurable TUI for managing tasks built using the [Bubbl
 - [Nerd Font][nerdfont] to display icons
 - [Go programming language][goinstall] for building from source (optional on Windows)
 
-**Known Issues:**
-- currently not working on MacOS until I get a homebrew tap and formulae set up
-
 ## Demo
 ![demo_gif](https://github.com/StasysMusial/kanban-board/blob/main/demo/demo.gif?raw=true)
 

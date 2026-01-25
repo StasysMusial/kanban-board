@@ -122,7 +122,8 @@ func GenerateDefaultConfig() {
 		return
 	}
 	dirPath := GetDefaultConfigDir()
-	os.MkdirAll(dirPath, os.ModeDir)
+	// os.MkdirAll(dirPath, os.ModeDir)
+	os.MkdirAll(dirPath, 0777)
 
 	file, err := os.Create(path)
 	if err != nil {
@@ -172,7 +173,8 @@ func GenerateProjectConfig() bool {
 		return false
 	}
 	dirPath := GetCwdConfigDir()
-	os.MkdirAll(dirPath, os.ModeDir)
+	// os.MkdirAll(dirPath, os.ModeDir)
+	os.MkdirAll(dirPath, 0777)
 
 	projConf, err := os.Create(path)
 	if err != nil {
