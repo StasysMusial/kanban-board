@@ -51,6 +51,9 @@ All configurable colors support ANSI 16 (4-bit), ANSI 256 (8-bit) and True Color
 ## Installation
 You can install kanban-board by downloading a prebuilt binary from the [releases page][releases]. Prebuilt binaries are available for Windows and MacOS.
 
+## Building From Source
+Building from sources requires [the Go programming language][goinstall].
+
 If you're on Linux or would like to build kanban-board yourself start by cloning the repo:
 
 ```bash
@@ -132,7 +135,7 @@ tags = [
 	{ icon="", color="#5c84d6" },
 	{ icon="󰃣", color="#f5d33d" },
 ]
-boards = [
+columns = [
 	{
 		name="IDEAS",
 		icon="",
@@ -171,3 +174,4 @@ This project is functional but lacks some features which might make or break via
 [lip]: https://github.com/charmbracelet/lipgloss
 [lipcolors]: https://github.com/charmbracelet/lipgloss#colors
 [releases]: https://github.com/StasysMusial/kanban-board/releases
+[goinstall]: https://go.dev/doc/install
