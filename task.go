@@ -66,7 +66,7 @@ func (t Task) Update(msg tea.Msg) (Task, tea.Cmd) {
 	return t, cmd
 }
 
-func (t Task) View(m model, b Board, index int) string {
+func (t Task) View(m model, b Column, index int) string {
 	// select style
 	var style TaskStyle
 	if t.selected && b.selected {

@@ -12,16 +12,16 @@ import (
 
 type (
 	config struct {
-		Title  string
-		Color  string
-		Tags   []tagData
-		Boards []boardData
+		Title   string
+		Color   string
+		Tags    []tagData
+		Columns []columnData
 	}
 	tagData struct {
 		Icon  string
 		Color string
 	}
-	boardData struct {
+	columnData struct {
 		Name  string
 		Icon  string
 		Color string
@@ -31,11 +31,11 @@ type (
 		Desc string
 		Tags int
 	}
-	boardSaveData struct {
+	columnSaveData struct {
 		Tasks []taskSaveData
 	}
 	modelSaveData struct {
-		Boards []boardSaveData
+		Columns []columnSaveData
 	}
 )
 
@@ -47,7 +47,7 @@ tags = [
 	{ icon="", color="#5c84d6" },
 	{ icon="󰃣", color="#f5d33d" },
 ]
-boards = [
+columns = [
 	{
 		name="IDEAS",
 		icon="",
@@ -94,16 +94,16 @@ func Path(input string) string {
 
 func ModelToJSON(m model) []byte {
 	var mData modelSaveData
-	for _, board := range m.boards {
-		var bData boardSaveData
-		for _, task := range board.tasks {
+	for _, column := range m.columns {
+		var bData columnSaveData
+		for _, task := range column.tasks {
 			var tData taskSaveData
 			tData.Name = task.name
 			tData.Desc = task.description
 			tData.Tags = task.tags
 			bData.Tasks = append(bData.Tasks, tData)
 		}
-		mData.Boards = append(mData.Boards, bData)
+		mData.Columns = append(mData.Columns, bData)
 	}
 	json, _ := json.MarshalIndent(&mData, "", "	")
 	return json

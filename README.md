@@ -1,4 +1,4 @@
-# Simple Kanban TUI
+# Minimal Kanban TUI
 A simple somewhat configurable TUI for managing tasks built using the [Bubbletea][tea] and [Lip Gloss][lip] framework.
 
 ## Demo
@@ -16,9 +16,9 @@ kanban-board manages a unique board for every directory you execute it in. This 
 
 Each board has it's own configuration file which is copied from a default config that is located in `~/.config/kanban`. Using this config file the user can adjust the following properties:
 
-- Columns (title, icon and color)
-- Tags (icon and color)
 - Board (title and color)
+- Tags (icon and color)
+- Columns (title, icon and color)
 
 The default config uses the name of the current directory as the board title and comes with four columns (`IDEAS`, `TO DO`, `IN PROGRESS` and `DONE`).
 </details>
@@ -113,7 +113,7 @@ Tags that can be added to tasks for sorting and organizational purposes. The ord
 </details>
 <details><summary>Columns</summary>
 
-Format: `boards: [{ name: string, icon: string, color: string },...]`
+Format: `columns: [{ name: string, icon: string, color: string },...]`
 
 The columns in your board from left to right. How many can fit on screen depends on your terminal window size.
 </details>

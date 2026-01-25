@@ -9,7 +9,7 @@ type KeyContextData struct {
 // context enum
 type KeyContext int
 const (
-	KEY_CONTEXT_BOARDS KeyContext = iota
+	KEY_CONTEXT_COLUMNS KeyContext = iota
 	KEY_CONTEXT_TASK
 	KEY_CONTEXT_TASKDESC
 	KEY_CONTEXTS
@@ -47,7 +47,7 @@ const (
 )
 
 // specific context data structs declaration
-var keyContextBoards   KeyContextData
+var keyContextBoard   KeyContextData
 var keyContextTask     KeyContextData
 var keyContextTaskDesc KeyContextData
 
@@ -71,7 +71,7 @@ func InitKeyContexts() {
 	keyContexts = make(map[KeyContext]KeyContextData)
 
 	// create context data storage
-	keyContextBoards = KeyContextData{
+	keyContextBoard = KeyContextData{
 		actions: []string{},
 		keys: []string{},
 	}
@@ -86,8 +86,8 @@ func InitKeyContexts() {
 
 	// resize arrays
 	for range BOARD_ACTIONS {
-		keyContextBoards.actions = append(keyContextBoards.actions, "")
-		keyContextBoards.keys = append(keyContextBoards.keys, "")
+		keyContextBoard.actions = append(keyContextBoard.actions, "")
+		keyContextBoard.keys = append(keyContextBoard.keys, "")
 	}
 	for range TASK_ACTIONS {
 		keyContextTask.actions = append(keyContextTask.actions, "")
@@ -99,35 +99,35 @@ func InitKeyContexts() {
 	}
 
 	// setup boards key and action labels
-	keyContextBoards.keys[BOARD_ACTION_QUIT]            = "q"
-	keyContextBoards.actions[BOARD_ACTION_QUIT]         = "quit"
+	keyContextBoard.keys[BOARD_ACTION_QUIT]            = "q"
+	keyContextBoard.actions[BOARD_ACTION_QUIT]         = "quit"
 
-	keyContextBoards.keys[BOARD_ACTION_ADD_TASK]        = "a"
-	keyContextBoards.actions[BOARD_ACTION_ADD_TASK]     = "add"
+	keyContextBoard.keys[BOARD_ACTION_ADD_TASK]        = "a"
+	keyContextBoard.actions[BOARD_ACTION_ADD_TASK]     = "add"
 
-	keyContextBoards.keys[BOARD_ACTION_SELECT]          = "h/j/k/l"
-	keyContextBoards.actions[BOARD_ACTION_SELECT]       = "select"
+	keyContextBoard.keys[BOARD_ACTION_SELECT]          = "h/j/k/l"
+	keyContextBoard.actions[BOARD_ACTION_SELECT]       = "select"
 
-	keyContextBoards.keys[BOARD_ACTION_MOVE_TASK]       = "H/J/K/L"
-	keyContextBoards.actions[BOARD_ACTION_MOVE_TASK]    = "move"
+	keyContextBoard.keys[BOARD_ACTION_MOVE_TASK]       = "H/J/K/L"
+	keyContextBoard.actions[BOARD_ACTION_MOVE_TASK]    = "move"
 
-	keyContextBoards.keys[BOARD_ACTION_GOTO]            = "g/G"
-	keyContextBoards.actions[BOARD_ACTION_GOTO]         = "top/bottom"
+	keyContextBoard.keys[BOARD_ACTION_GOTO]            = "g/G"
+	keyContextBoard.actions[BOARD_ACTION_GOTO]         = "top/bottom"
 
-	keyContextBoards.keys[BOARD_ACTION_EDIT_TASK]       = "enter"
-	keyContextBoards.actions[BOARD_ACTION_EDIT_TASK]    = "edit"
+	keyContextBoard.keys[BOARD_ACTION_EDIT_TASK]       = "enter"
+	keyContextBoard.actions[BOARD_ACTION_EDIT_TASK]    = "edit"
 
-	keyContextBoards.keys[BOARD_ACTION_DELETE_TASK]     = "x"
-	keyContextBoards.actions[BOARD_ACTION_DELETE_TASK]  = "cut"
+	keyContextBoard.keys[BOARD_ACTION_DELETE_TASK]     = "x"
+	keyContextBoard.actions[BOARD_ACTION_DELETE_TASK]  = "cut"
 
-	keyContextBoards.keys[BOARD_ACTION_COPY_TASK]       = "y"
-	keyContextBoards.actions[BOARD_ACTION_COPY_TASK]    = "yank"
+	keyContextBoard.keys[BOARD_ACTION_COPY_TASK]       = "y"
+	keyContextBoard.actions[BOARD_ACTION_COPY_TASK]    = "yank"
 
-	keyContextBoards.keys[BOARD_ACTION_PASTE_TASK]      = "p"
-	keyContextBoards.actions[BOARD_ACTION_PASTE_TASK]   = "paste"
+	keyContextBoard.keys[BOARD_ACTION_PASTE_TASK]      = "p"
+	keyContextBoard.actions[BOARD_ACTION_PASTE_TASK]   = "paste"
 
-	keyContextBoards.keys[BOARD_ACTION_SORT]            = "s/S"
-	keyContextBoards.actions[BOARD_ACTION_SORT]         = "sort"
+	keyContextBoard.keys[BOARD_ACTION_SORT]            = "s/S"
+	keyContextBoard.actions[BOARD_ACTION_SORT]         = "sort"
 
 	// setup task key and action labels
 	keyContextTask.keys[TASK_ACTION_SWITCH_FIELD]    = "tab"
@@ -147,7 +147,7 @@ func InitKeyContexts() {
 	keyContextTaskDesc.actions[TASKDESC_ACTION_FIELD]    = "switch field"
 
 	// populate key context array
-	keyContexts[KEY_CONTEXT_BOARDS] = keyContextBoards
+	keyContexts[KEY_CONTEXT_COLUMNS] = keyContextBoard
 	keyContexts[KEY_CONTEXT_TASKDESC] = keyContextTask
 	keyContexts[KEY_CONTEXT_TASK] = keyContextTaskDesc
 }

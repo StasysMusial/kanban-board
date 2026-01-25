@@ -10,7 +10,7 @@ type TaskStyle struct {
 	descriptionStyle lip.Style
 }
 
-type BoardStyle struct {
+type ColumnStyle struct {
 	containerStyle lip.Style
 	titleStyle     lip.Style
 	counterStyle   lip.Style
@@ -38,8 +38,8 @@ var taskStyle           TaskStyle
 var taskStyleSelected   TaskStyle
 var taskStyleUnfocused  TaskStyle
 
-var boardStyle          BoardStyle
-var boardStyleSelected  BoardStyle
+var columnStyle          ColumnStyle
+var columnStyleSelected  ColumnStyle
 
 var helpStyle           HelpStyle
 
@@ -108,7 +108,7 @@ func InitStyles() {
 			MaxHeight(1).
 			Height(1),
 	}
-	boardStyle = BoardStyle{
+	columnStyle = ColumnStyle{
 		containerStyle: lip.NewStyle().
 			Padding(0, 2).
 			Border(lip.RoundedBorder()).
@@ -117,7 +117,7 @@ func InitStyles() {
 		counterStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 		scrollerStyle: lip.NewStyle().Foreground(lip.Color("#404040")),
 	}
-	boardStyleSelected = BoardStyle{
+	columnStyleSelected = ColumnStyle{
 		containerStyle: lip.NewStyle().
 			Padding(0, 2).
 			Border(lip.RoundedBorder()).

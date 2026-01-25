@@ -22,7 +22,7 @@ type model struct {
 
 	mode      Mode
 	cursor    int
-	boards    []Board
+	columns   []Column
 	editor    Editor
 	help      Help
 
@@ -44,7 +44,7 @@ func initialModel() tea.Model {
 		can_paste: false,
 	}
 
-	m.help.SetKeyContext(KEY_CONTEXT_BOARDS)
+	m.help.SetKeyContext(KEY_CONTEXT_COLUMNS)
 
 	// set up editor
 	m.editor = NewEditor()
@@ -64,9 +64,9 @@ func (m *model) LoadConfig(c config) {
 	for _, t := range c.Tags {
 		NewTag(t.Icon, lip.Color(t.Color))
 	}
-	for _, b := range c.Boards {
-		board := NewBoard(b.Name, b.Icon, lip.Color(b.Color))
-		m.boards = append(m.boards, board)
+	for _, b := range c.Columns {
+		board := NewColumn(b.Name, b.Icon, lip.Color(b.Color))
+		m.columns = append(m.columns, board)
 	}
 	title := c.Title
 	if title == "DEFAULT" {
@@ -82,15 +82,15 @@ func (m *model) LoadConfig(c config) {
 }
 
 func (m *model) LoadState(d modelSaveData) {
-	for i, bData := range d.Boards {
+	for i, bData := range d.Columns {
 		for _, t := range bData.Tasks {
 			task := Task{
 				name: t.Name,
 				description: t.Desc,
 				tags: t.Tags,
 			}
-			if i < len(m.boards) {
-				m.boards[i].tasks = append(m.boards[i].tasks, task)
+			if i < len(m.columns) {
+				m.columns[i].tasks = append(m.columns[i].tasks, task)
 			}
 		}
 	}
@@ -100,12 +100,12 @@ func (m *model) SendTaskToEditor(task Task) {
 	m.editor = m.editor.LoadTask(task)
 }
 
-func (m model) GetBoardCount() int {
-	return len(m.boards)
+func (m model) GetColumnCount() int {
+	return len(m.columns)
 }
 
-func (m model) HasBoards() bool {
-	return m.GetBoardCount() > 0
+func (m model) HasColumns() bool {
+	return m.GetColumnCount() > 0
 }
 
 func (m *model) Print(message string, color lip.Color) {
@@ -115,12 +115,12 @@ func (m *model) Print(message string, color lip.Color) {
 }
 
 func (m *model) IncCursor() {
-	if m.cursor < len(m.boards)-1 {
+	if m.cursor < len(m.columns)-1 {
 		m.cursor++
 	}
-	for i := range m.boards {
+	for i := range m.columns {
 		selected := (i == m.cursor)
-		m.boards[i].SetSelected(selected)
+		m.columns[i].SetSelected(selected)
 	}
 }
 
@@ -128,29 +128,29 @@ func (m *model) DecrCursor() {
 	if m.cursor > 0 {
 		m.cursor--
 	}
-	for i := range m.boards {
+	for i := range m.columns {
 		selected := (i == m.cursor)
-		m.boards[i].SetSelected(selected)
+		m.columns[i].SetSelected(selected)
 	}
 }
 
 func (m *model) AddTask() {
 	task := NewTask(m, "")
-	m.boards[m.cursor].AddTask(task, m.boards[m.cursor].cursor+1)
-	m.boards[m.cursor].IncCursor()
-	m.Print(fmt.Sprintf("Added task to [%s]", m.boards[m.cursor].title), msgColorInfo)
+	m.columns[m.cursor].AddTask(task, m.columns[m.cursor].cursor+1)
+	m.columns[m.cursor].IncCursor()
+	m.Print(fmt.Sprintf("Added task to [%s]", m.columns[m.cursor].title), msgColorInfo)
 }
 
 func (m *model) CopyTask() {
-	board := m.boards[m.cursor]
+	board := m.columns[m.cursor]
 	m.clipboard = board.tasks[board.cursor]
 	m.can_paste = true
 	m.Print(fmt.Sprintf("Yanked [%s]", m.clipboard.name), msgColorInfo)
 }
 
 func (m *model) RemoveTask() {
-	board := m.boards[m.cursor]
-	m.boards[m.cursor].RemoveTask(board.cursor)
+	board := m.columns[m.cursor]
+	m.columns[m.cursor].RemoveTask(board.cursor)
 }
 
 func (m *model) CutTask() {
@@ -167,10 +167,10 @@ func (m *model) PasteTask(below bool) {
 	if below {
 		offset = 1
 	}
-	board := m.boards[m.cursor]
-	m.boards[m.cursor].AddTask(m.clipboard, board.cursor+offset)
+	board := m.columns[m.cursor]
+	m.columns[m.cursor].AddTask(m.clipboard, board.cursor+offset)
 	if below {
-		m.boards[m.cursor].IncCursor()
+		m.columns[m.cursor].IncCursor()
 	}
 	m.Print(fmt.Sprintf("Pasted [%s] to [%s]", m.clipboard.name, board.title), msgColorInfo)
 }
@@ -185,15 +185,15 @@ func (m *model) PasteTaskAbove() {
 
 func (m *model) MoveTaskRight() {
 	index := m.cursor+1
-	if index >= len(m.boards) {
+	if index >= len(m.columns) {
 		return
 	}
-	board := m.boards[m.cursor]
+	board := m.columns[m.cursor]
 	task := board.tasks[board.cursor]
-	m.boards[m.cursor].RemoveTask(board.cursor)
+	m.columns[m.cursor].RemoveTask(board.cursor)
 
-	m.boards[index].AddTask(task, 0)
-	m.Print(fmt.Sprintf("Moved [%s] to [%s]", task.name, m.boards[index].title), msgColorInfo)
+	m.columns[index].AddTask(task, 0)
+	m.Print(fmt.Sprintf("Moved [%s] to [%s]", task.name, m.columns[index].title), msgColorInfo)
 }
 
 func (m *model) MoveTaskLeft() {
@@ -201,19 +201,19 @@ func (m *model) MoveTaskLeft() {
 	if index < 0 {
 		return
 	}
-	board := m.boards[m.cursor]
+	board := m.columns[m.cursor]
 	task := board.tasks[board.cursor]
-	m.boards[m.cursor].RemoveTask(board.cursor)
+	m.columns[m.cursor].RemoveTask(board.cursor)
 
-	m.boards[index].AddTask(task, 0)
-	m.Print(fmt.Sprintf("Moved [%s] to [%s]", task.name, m.boards[index].title), msgColorInfo)
+	m.columns[index].AddTask(task, 0)
+	m.Print(fmt.Sprintf("Moved [%s] to [%s]", task.name, m.columns[index].title), msgColorInfo)
 }
 
 func (m model) GetSelectedTask() Task {
-	if len(m.boards) < 1 {
+	if len(m.columns) < 1 {
 		return Task{}
 	}
-	board := m.boards[m.cursor]
+	board := m.columns[m.cursor]
 	if board.IsEmpty() {
 		return Task{}
 	}
@@ -222,9 +222,9 @@ func (m model) GetSelectedTask() Task {
 }
 
 func (m *model) SetSelectedTask(task Task) {
-	board := m.boards[m.cursor]
+	board := m.columns[m.cursor]
 	board.tasks[board.cursor] = task
-	m.boards[m.cursor] = board
+	m.columns[m.cursor] = board
 }
 
 func (m *model) EnterModeEdit() {
@@ -238,7 +238,7 @@ func (m *model) EnterModeNormal() {
 	m.mode = MODE_NORMAL
 	m.editor.name.Blur()
 	m.editor.desc.Blur()
-	m.help.context_data = keyContextBoards
+	m.help.context_data = keyContextBoard
 }
 
 func (m model) ViewTitle() string {
@@ -265,16 +265,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		if !m.HasBoards() {
+		if !m.HasColumns() {
 			break
 		}
-		boardsCount := m.GetBoardCount()
+		boardsCount := m.GetColumnCount()
 		boardsAreaWidth := m.width-EDITOR_WIDTH
-		width := boardsAreaWidth / len(m.boards)
+		width := boardsAreaWidth / len(m.columns)
 		width -= 1
 		for i := range boardsCount {
-			m.boards[i].width = width
-			m.boards[i].SetHeight(m.height-7)
+			m.columns[i].width = width
+			m.columns[i].SetHeight(m.height-7)
 		}
 	// process input
 	case tea.KeyMsg:
@@ -283,7 +283,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.editor.mode != EDIT_MODE_NAME {
 				break
 			}
-			if !m.HasBoards() {
+			if !m.HasColumns() {
 				break
 			}
 			switch msg.String() {
@@ -316,7 +316,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.message = ""
 			}
 
-			if !m.HasBoards() {
+			if !m.HasColumns() {
 				break
 			}
 
@@ -334,7 +334,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.IncCursor()
 			}
 			// only do this stuff if selected board has tasks inside it
-			if !m.boards[m.cursor].IsEmpty() {
+			if !m.columns[m.cursor].IsEmpty() {
 				switch msg.String() {
 				case "H":
 					m.MoveTaskLeft()
@@ -354,10 +354,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	// update boards
-	for i := range len(m.boards) {
+	for i := range len(m.columns) {
 		var cmd tea.Cmd
-		m.boards[i], cmd = m.boards[i].Update(msg, m)
-		m.boards[i].selected = (i == m.cursor)
+		m.columns[i], cmd = m.columns[i].Update(msg, m)
+		m.columns[i].selected = (i == m.cursor)
 		cmds = append(cmds, cmd)
 	}
 
@@ -399,11 +399,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	var boards []string
-	for _, board := range m.boards {
+	for _, board := range m.columns {
 		boards = append(boards, board.View(m))
 	}
 	result := ""
-	if m.HasBoards() {
+	if m.HasColumns() {
 		result = lip.JoinHorizontal(
 			lip.Left,
 			boards...

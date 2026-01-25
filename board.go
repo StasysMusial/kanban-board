@@ -8,7 +8,7 @@ import (
 	lip "github.com/charmbracelet/lipgloss"
 )
 
-type Board struct {
+type Column struct {
 	width       int
 	height      int
 
@@ -24,8 +24,8 @@ type Board struct {
 	shown_tasks int
 }
 
-func NewBoard(title string, icon string, color lip.Color) Board {
-	return Board{
+func NewColumn(title string, icon string, color lip.Color) Column {
+	return Column{
 		title:    title,
 		icon:     icon,
 		color:    color,
@@ -37,7 +37,7 @@ func NewBoard(title string, icon string, color lip.Color) Board {
 	}
 }
 
-func (b *Board) IncCursor() {
+func (b *Column) IncCursor() {
 	if b.cursor < len(b.tasks)-1 {
 		b.cursor++
 		if b.cursor >= b.shown_tasks + b.scroll {
@@ -46,7 +46,7 @@ func (b *Board) IncCursor() {
 	}
 }
 
-func (b *Board) DecrCursor() {
+func (b *Column) DecrCursor() {
 	if b.cursor > 0 {
 		b.cursor--
 		if b.cursor < b.scroll {
@@ -55,11 +55,11 @@ func (b *Board) DecrCursor() {
 	}
 }
 
-func (b Board) IsEmpty() bool {
+func (b Column) IsEmpty() bool {
 	return (len(b.tasks) == 0)
 }
 
-func (b *Board) AddTask(task Task, index int) {
+func (b *Column) AddTask(task Task, index int) {
 	if index < 0 || index > len(b.tasks) {
 		index = 0
 	}
@@ -70,7 +70,7 @@ func (b *Board) AddTask(task Task, index int) {
 	b.tasks = tasks
 }
 
-func (b *Board) RemoveTask(index int) {
+func (b *Column) RemoveTask(index int) {
 	tasks := []Task{}
 	tasks = append(b.tasks[:index], b.tasks[index+1:]...)
 	b.tasks = tasks
@@ -85,7 +85,7 @@ func (b *Board) RemoveTask(index int) {
 }
 
 // swaps task at index with index below
-func (b *Board) SwapTask(index int) {
+func (b *Column) SwapTask(index int) {
 	index1 := index
 	index2 := index-1
 
@@ -104,26 +104,26 @@ func (b *Board) SwapTask(index int) {
 	b.tasks[index2] = t1
 }
 
-func (b *Board) MoveTaskUp() {
+func (b *Column) MoveTaskUp() {
 	b.SwapTask(b.cursor)
 }
 
-func (b *Board) MoveTaskDown() {
+func (b *Column) MoveTaskDown() {
 	b.SwapTask(b.cursor+1)
 }
 
-func (b *Board) SetSelected(selected bool) {
+func (b *Column) SetSelected(selected bool) {
 	b.selected = selected
 	b.cursor = 0
 	b.scroll = 0
 }
 
-func (b *Board) SetHeight(height int) {
+func (b *Column) SetHeight(height int) {
 	b.height = height
 	b.shown_tasks = height / 3
 }
 
-func (b *Board) SortByTags(descending bool) {
+func (b *Column) SortByTags(descending bool) {
 	tasks := b.tasks
 	if descending {
 		sort.Slice(tasks, func(i, j int) bool {
@@ -141,11 +141,11 @@ func (b *Board) SortByTags(descending bool) {
 	b.tasks = tasks
 }
 
-func (b Board) Init() tea.Cmd {
+func (b Column) Init() tea.Cmd {
 	return nil
 }
 
-func (b Board) Update(msg tea.Msg, m model) (Board, tea.Cmd) {
+func (b Column) Update(msg tea.Msg, m model) (Column, tea.Cmd) {
 	cmds := []tea.Cmd{}
 
 	switch msg := msg.(type) {
@@ -192,7 +192,7 @@ func (b Board) Update(msg tea.Msg, m model) (Board, tea.Cmd) {
 	return b, tea.Batch(cmds...)
 }
 
-func (b Board) View(m model) string {
+func (b Column) View(m model) string {
 	var tasks []string
 	for i, task := range b.tasks {
 		if i < b.scroll {
@@ -212,12 +212,12 @@ func (b Board) View(m model) string {
 		downScroller = "..."
 	}
 
-	var style BoardStyle
+	var style ColumnStyle
 	if b.selected && m.mode == MODE_NORMAL {
-		style = boardStyleSelected
+		style = columnStyleSelected
 		// style.titleStyle = style.titleStyle
 	} else {
-		style = boardStyle
+		style = columnStyle
 	}
 
 	result := lip.JoinVertical(
