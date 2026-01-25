@@ -1,0 +1,30 @@
+title = "KANBAN 󰫢"
+color = "DEFAULT"
+tags = [
+	{ icon="󰫢", color="#ff4cc4" },
+	{ icon="󰅩", color="#89d789" },
+	{ icon="", color="#5c84d6" },
+	{ icon="󰃣", color="#f5d33d" },
+]
+columns = [
+	{
+		name="IDEAS",
+		icon="",
+		color="#5d4cff",
+	},
+	{
+		name="TO DO",
+		icon="",
+		color="#ff4cc4",
+	},
+	{
+		name="IN PROGRESS",
+		icon="",
+		color="#ffcb4c",
+	},
+	{
+		name="FINISHED",
+		icon="",
+		color="#bcff4c",
+	},
+]

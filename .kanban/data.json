@@ -1,0 +1,59 @@
+{
+	"Columns": [
+		{
+			"Tasks": [
+				{
+					"Name": "edit desc in text editor",
+					"Desc": "press ctrl-e to open the description in a text editor (like nvim or notepad)\n\nwill need a config adjustment to configure editor since thats not a thing on windows i dont think",
+					"Tags": 4
+				},
+				{
+					"Name": "automatic versioning",
+					"Desc": "so that i dont have to create a version number manually ever again",
+					"Tags": 4
+				},
+				{
+					"Name": "custom keybinds",
+					"Desc": "self explanatory\n\nwill require quite the refactor",
+					"Tags": 4
+				},
+				{
+					"Name": "support for themes",
+					"Desc": "would be really cool to have\n\nnot suuuuper necessary, let's see",
+					"Tags": 4
+				}
+			]
+		},
+		{
+			"Tasks": [
+				{
+					"Name": "release automation",
+					"Desc": "figure out if there is some kind of easy way of automating the release including generating the formula for homebrew and generating the manifest for scoop",
+					"Tags": 4
+				}
+			]
+		},
+		{
+			"Tasks": null
+		},
+		{
+			"Tasks": [
+				{
+					"Name": "update readme -\u003e installation",
+					"Desc": "add brew and scoop installation steps to readme",
+					"Tags": 8
+				},
+				{
+					"Name": "make available on scoop",
+					"Desc": "figure out the whole scoop manifests thing",
+					"Tags": 8
+				},
+				{
+					"Name": "release kanban-board",
+					"Desc": "yippeee",
+					"Tags": 8
+				}
+			]
+		}
+	]
+}
