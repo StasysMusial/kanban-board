@@ -3,7 +3,6 @@ A simple and somewhat configurable TUI for managing tasks built using the [Bubbl
 
 **Requirements:**
 - [Nerd Font][nerdfont] to display icons
-- [Go programming language][goinstall] for building from source (optional)
 
 ## Demo
 ![demo_gif](https://github.com/StasysMusial/kanban-board/blob/main/demo/demo.gif?raw=true)
