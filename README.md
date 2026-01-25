@@ -3,7 +3,7 @@ A simple and somewhat configurable TUI for managing tasks built using the [Bubbl
 
 **Requirements:**
 - [Nerd Font][nerdfont] to display icons
-- [Go programming language][goinstall] for building from source (optional on Windows)
+- [Go programming language][goinstall] for building from source (optional)
 
 ## Demo
 ![demo_gif](https://github.com/StasysMusial/kanban-board/blob/main/demo/demo.gif?raw=true)
@@ -53,12 +53,25 @@ All configurable colors support ANSI 16 (4-bit), ANSI 256 (8-bit) and True Color
 </details>
 
 ## Installation
-If you're on Windows you can install kanban-board by downloading a prebuilt binary from the [releases page][releases] and adding it to your `PATH`.
-
-You should now be able to run the following command in any directory to start kanban-board and initialize a board:
+Using `scoop` on Windows:
 
 ```bash
-kanban-board
+scoop bucket add stasysmusial https://github.com/StasysMusial/scoop-bucket
+scoop install stasysmusial/kanban-board
+```
+
+Using `brew` on MacOS:
+
+```bash
+brew tap stasysmusial/formulae
+brew install kanban-board
+```
+
+You can check if the installation succeeded by running:
+
+
+```bash
+kanban-board --version
 ```
 
 ## Building From Source
