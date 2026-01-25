@@ -24,7 +24,7 @@ Each board has it's own configuration file which is copied from a default config
 - Tags (icon and color)
 - Columns (title, icon and color)
 
-The default config uses the name of the current directory as the board title and comes with four columns (`IDEAS`, `TO DO`, `IN PROGRESS` and `DONE`).
+The default config uses the name of the current directory as the board title and comes with four columns (`IDEAS`, `TO DO`, `IN PROGRESS` and `FINISHED`).
 </details>
 
 </details>
