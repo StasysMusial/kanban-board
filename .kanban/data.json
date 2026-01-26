@@ -28,6 +28,11 @@
 					"Tags": 4
 				},
 				{
+					"Name": "more config options",
+					"Desc": "- editor width",
+					"Tags": 4
+				},
+				{
 					"Name": "deadlines",
 					"Desc": "deadlines for tasks that will display time left and will change the color of the task when the deadline is close/has been crossed",
 					"Tags": 4
@@ -35,7 +40,23 @@
 			]
 		},
 		{
-			"Tasks": null
+			"Tasks": [
+				{
+					"Name": "search / filter",
+					"Desc": "press / or f to filter a column",
+					"Tags": 12
+				},
+				{
+					"Name": "undo / redo",
+					"Desc": "undo redo history local to current session OR limited to a fixed amount of actions\n\nright now my idea is to literally just make snapshots of the board state whenever some sort of edit happens",
+					"Tags": 12
+				},
+				{
+					"Name": "tag filtering",
+					"Desc": "while in board mode hit tag key (f1, f2, f3,...) to filter by a specific tag\n\nesc resets all filters",
+					"Tags": 4
+				}
+			]
 		},
 		{
 			"Tasks": null
