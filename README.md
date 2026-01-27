@@ -40,6 +40,8 @@ a       - add task
 x       - cut task
 y       - yank task
 p       - paste task
+u       - undo
+<C-r>   - redo
 ```
 
 Similar to VIM, cutting a task will store it in the clipboard, allowing the user to paste it elsewhere.
