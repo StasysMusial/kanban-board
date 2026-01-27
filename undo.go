@@ -64,7 +64,9 @@ func Undo(m *model, printMsg bool) {
 	m.LoadState(data)
 	m.cursor = state.boardCursor
 	m.columns[m.cursor].cursor = state.columnCursor
-	m.columns[m.cursor].tasks[state.columnCursor].selected = true
+	if !m.columns[m.cursor].IsEmpty() {
+		m.columns[m.cursor].tasks[state.columnCursor].selected = true
+	}
 	if printMsg {
 		m.Print("Undo", msgColorInfo)
 	}
@@ -82,6 +84,8 @@ func Redo(m *model) {
 	m.LoadState(data)
 	m.cursor = state.boardCursor
 	m.columns[m.cursor].cursor = state.columnCursor
-	m.columns[m.cursor].tasks[state.columnCursor].selected = true
+	if !m.columns[m.cursor].IsEmpty() {
+		m.columns[m.cursor].tasks[state.columnCursor].selected = true
+	}
 	m.Print("Redo", msgColorInfo)
 }
