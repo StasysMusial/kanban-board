@@ -3,6 +3,11 @@
 		{
 			"Tasks": [
 				{
+					"Name": "reverse order with r",
+					"Desc": "press r to reverse the order of a list",
+					"Tags": 4
+				},
+				{
 					"Name": "release automation",
 					"Desc": "figure out if there is some kind of easy way of automating the release including generating the formula for homebrew and generating the manifest for scoop",
 					"Tags": 4
