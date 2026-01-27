@@ -83,6 +83,7 @@ func (m *model) LoadConfig(c config) {
 
 func (m *model) LoadState(d modelSaveData) {
 	for i, bData := range d.Columns {
+		m.columns[i].tasks = []Task{}
 		for _, t := range bData.Tasks {
 			task := Task{
 				name: t.Name,
@@ -213,18 +214,20 @@ func (m model) GetSelectedTask() Task {
 	if len(m.columns) < 1 {
 		return Task{}
 	}
-	board := m.columns[m.cursor]
-	if board.IsEmpty() {
+	column := m.columns[m.cursor]
+	column.ClampCursor()
+	if column.IsEmpty() {
 		return Task{}
 	}
-	task := board.tasks[board.cursor]
+	task := column.tasks[column.cursor]
 	return task
 }
 
 func (m *model) SetSelectedTask(task Task) {
-	board := m.columns[m.cursor]
-	board.tasks[board.cursor] = task
-	m.columns[m.cursor] = board
+	column := m.columns[m.cursor]
+	column.ClampCursor()
+	column.tasks[column.cursor] = task
+	m.columns[m.cursor] = column
 }
 
 func (m *model) EnterModeEdit() {
@@ -304,6 +307,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					m.SetSelectedTask(m.editor.task)
 				}
+				Undo(&m, false)
 			}
 			// edit mode mappings go here
 		case MODE_NORMAL:
@@ -314,6 +318,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			case "esc":
 				m.message = ""
+			case "u":
+				Undo(&m, true)
+				for i := range m.columns {
+					m.columns[i].ClampCursor()
+				}
+			case "ctrl+r":
+				Redo(&m)
+				for i := range m.columns {
+					m.columns[i].ClampCursor()
+				}
 			}
 
 			if !m.HasColumns() {
@@ -322,11 +336,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			switch msg.String() {
 			case "a":
+				AddUndoPoint(m, true)
 				m.AddTask()
 				deferredEdit = true
 			case "p":
+				AddUndoPoint(m, true)
 				m.PasteTaskBelow()
 			case "P":
+				AddUndoPoint(m, true)
 				m.PasteTaskAbove()
 			case "h":
 				m.DecrCursor()
@@ -337,16 +354,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if !m.columns[m.cursor].IsEmpty() {
 				switch msg.String() {
 				case "H":
+					AddUndoPoint(m, true)
 					m.MoveTaskLeft()
 					m.DecrCursor()
 				case "L":
+					AddUndoPoint(m, true)
 					m.MoveTaskRight()
 					m.IncCursor()
 				case "x":
+					AddUndoPoint(m, true)
 					m.CutTask()
 				case "y":
 					m.CopyTask()
 				case "enter":
+					AddUndoPoint(m, true)
 					m.EnterModeEdit()
 				}
 			}

@@ -27,6 +27,8 @@ const (
 	BOARD_ACTION_DELETE_TASK
 	BOARD_ACTION_COPY_TASK
 	BOARD_ACTION_PASTE_TASK
+	BOARD_ACTION_UNDO
+	BOARD_ACTION_REDO
 	BOARD_ACTION_QUIT
 	BOARD_ACTIONS
 )
@@ -105,10 +107,10 @@ func InitKeyContexts() {
 	keyContextBoard.keys[BOARD_ACTION_ADD_TASK]        = "a"
 	keyContextBoard.actions[BOARD_ACTION_ADD_TASK]     = "add"
 
-	keyContextBoard.keys[BOARD_ACTION_SELECT]          = "h/j/k/l"
+	keyContextBoard.keys[BOARD_ACTION_SELECT]          = "hjkl"
 	keyContextBoard.actions[BOARD_ACTION_SELECT]       = "select"
 
-	keyContextBoard.keys[BOARD_ACTION_MOVE_TASK]       = "H/J/K/L"
+	keyContextBoard.keys[BOARD_ACTION_MOVE_TASK]       = "HJKL"
 	keyContextBoard.actions[BOARD_ACTION_MOVE_TASK]    = "move"
 
 	keyContextBoard.keys[BOARD_ACTION_GOTO]            = "g/G"
@@ -126,8 +128,14 @@ func InitKeyContexts() {
 	keyContextBoard.keys[BOARD_ACTION_PASTE_TASK]      = "p"
 	keyContextBoard.actions[BOARD_ACTION_PASTE_TASK]   = "paste"
 
-	keyContextBoard.keys[BOARD_ACTION_SORT]            = "s/S"
+	keyContextBoard.keys[BOARD_ACTION_SORT]            = "s"
 	keyContextBoard.actions[BOARD_ACTION_SORT]         = "sort"
+
+	keyContextBoard.keys[BOARD_ACTION_UNDO]            = "u"
+	keyContextBoard.actions[BOARD_ACTION_UNDO]         = "undo"
+
+	keyContextBoard.keys[BOARD_ACTION_REDO]            = "<C-r>"
+	keyContextBoard.actions[BOARD_ACTION_REDO]         = "redo"
 
 	// setup task key and action labels
 	keyContextTask.keys[TASK_ACTION_SWITCH_FIELD]    = "tab"
