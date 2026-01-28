@@ -3,7 +3,7 @@ package main
 import ( "strconv"; "strings"; "fmt" )
 
 // this number needs to be updated right before an update is released
-const CURRENT_VERSION = "1.1.1"
+const CURRENT_VERSION = "1.1.2"
 
 var appVersion Version
 

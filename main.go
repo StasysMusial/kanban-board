@@ -8,12 +8,22 @@ import (
 )
 
 func main() {
-	if len(os.Args) == 2 {
-		switch os.Args[1] {
+	switch len(os.Args) {
+	case 1:
+		break
+	case 2:
+		arg := os.Args[1]
+		switch arg {
 		case "-v", "--version":
-			fmt.Println(fmt.Sprintf("kanban-board v%s", CURRENT_VERSION))
+			fmt.Printf("kanban-board v%s\n", CURRENT_VERSION)
+			return
+		default:
+			fmt.Printf("Error: Unrecognized argument '%s'\n", arg)
 			return
 		}
+	default:
+		fmt.Println("Error: Too many arguments")
+		return
 	}
 
 	InitVersion()

@@ -160,7 +160,8 @@ func ProjectPrompt() bool {
 		return false
 	default:
 		fmt.Println("Error: Unrecognized input")
-		return ProjectPrompt()
+		// return ProjectPrompt()
+		return false
 	}
 }
 
